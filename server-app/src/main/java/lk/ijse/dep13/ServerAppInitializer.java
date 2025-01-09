@@ -16,7 +16,7 @@ public class ServerAppInitializer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Scene scene = new Scene(AppRouter.getContainer(AppRouter.Routes.MAIN).load());
+        Scene scene = new Scene(AppRouter.getContainer(AppRouter.Routes.TEXTSCREEN).load());
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setTitle("Remote Desktop Application");

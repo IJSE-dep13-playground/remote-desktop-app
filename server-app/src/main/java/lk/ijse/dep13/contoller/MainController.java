@@ -1,4 +1,4 @@
-package lk.ijse.dep13.control;
+package lk.ijse.dep13.contoller;
 
 public class MainController {
 }
