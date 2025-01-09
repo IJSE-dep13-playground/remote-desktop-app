@@ -1,0 +1,58 @@
+*{
+    -fx-font-family: Poppins;
+}
+
+#vBoxNavBar{
+    -fx-background-color: linear-gradient(to bottom, #007bff, #0056b3);
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.2, 0, 2);
+
+}
+
+#nav-icon{
+    -fx-background-color: linear-gradient(to right, #5fc6fd, #3f9bf6);
+    -fx-background-radius: 15px;
+}
+
+#lblWelcome{
+    -fx-font-family: Montserrat;
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: #1c4172;
+}
+
+#btnCreateSession{
+    -fx-font-family: Montserrat;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom, #28c118, #028f1e);
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+    -fx-transition: 0.3s ease-in-out;
+}
+#btnCreateSession:hover{
+    -fx-background-color: linear-gradient(to bottom, #2fda1c, #03a823);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+#btnAbortSession{
+    -fx-font-family: Montserrat;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom, #d63116, #ca2107);
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+    -fx-transition: 0.3s ease-in-out;
+}
+
+#btnAbortSession:hover{
+    -fx-background-color: linear-gradient(to bottom, #e62e10, #c81f04);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
