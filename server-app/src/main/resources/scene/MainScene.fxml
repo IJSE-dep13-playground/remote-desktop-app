@@ -11,50 +11,49 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
-
-<AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
+<AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" stylesheets="@../css/MainScene.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
    <children>
-      <VBox fx:id="vBoxNavBar" prefHeight="576.0" prefWidth="91.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox fx:id="vBoxNavBar" prefHeight="576.0" prefWidth="95.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox id="nav-icon" alignment="CENTER" prefHeight="82.0" prefWidth="91.0">
+            <HBox id="nav-icon" alignment="CENTER" prefHeight="65.0" prefWidth="60.0">
                <children>
-                  <ImageView fitHeight="53.0" fitWidth="57.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/video_call_icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="86.0" prefWidth="91.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="65.0" prefWidth="60.0">
                <children>
-                  <ImageView fitHeight="62.0" fitWidth="72.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/chat_icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="95.0" prefHeight="85.0" prefWidth="91.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="95.0" prefHeight="65.0" prefWidth="60.0">
                <children>
-                  <ImageView fitHeight="63.0" fitWidth="66.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../image/connection.png" />
+                        <Image url="@../image/folder_icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="180.0" prefHeight="85.0" prefWidth="91.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="180.0" prefHeight="65.0" prefWidth="60.0">
                <children>
-                  <ImageView fitHeight="73.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/DeskMe_Icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="265.0" prefHeight="85.0" prefWidth="91.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="265.0" prefHeight="65.0" prefWidth="60.0">
                <children>
-                  <ImageView fitHeight="66.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/settings_icon.png" />
                      </image>
@@ -64,10 +63,10 @@
          </children>
       </VBox>
       <Line endX="455.0" layoutX="242.0" layoutY="529.0" startX="-128.0" />
-      <Label layoutX="140.0" layoutY="544.0" text="Label" />
+      <Label layoutX="140.0" layoutY="544.0" text="Connection status" />
       <Circle fill="#18f532" layoutX="126.0" layoutY="553.0" radius="6.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-      <Label fx:id="lblWelcome" layoutX="111.0" layoutY="22.0" text="Welcome to DeskMe" />
-      <HBox fx:id="hBoxSession" alignment="CENTER" layoutX="136.0" layoutY="126.0" prefHeight="66.0" prefWidth="557.0">
+      <Label fx:id="lblWelcome" layoutX="120.0" layoutY="22.0" text="Welcome to DeskMe" />
+      <HBox fx:id="hBoxSession" alignment="CENTER" layoutX="136.0" layoutY="126.0" prefHeight="66.0" prefWidth="557.0" AnchorPane.rightAnchor="25.0">
          <children>
             <Button fx:id="btnCreateSession" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#btnCreateSessionOnAction" prefHeight="56.0" prefWidth="60.0">
                <HBox.margin>
