@@ -3,85 +3,90 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/MainScene.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.control.MainController">
+
+<AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
    <children>
-      <VBox fx:id="vBoxNavBar" prefHeight="720.0" prefWidth="88.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox fx:id="vBoxNavBar" prefHeight="576.0" prefWidth="91.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox id="nav-icon" fx:id="hBoxVideo" alignment="CENTER" layoutX="20.0" layoutY="20.0" prefHeight="67.0" prefWidth="50.0">
+            <HBox id="nav-icon" alignment="CENTER" prefHeight="82.0" prefWidth="91.0">
                <children>
-                  <ImageView fitHeight="60.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="53.0" fitWidth="57.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/video_call_icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" fx:id="hBoxChat" alignment="CENTER" layoutX="20.0" layoutY="130.0" prefHeight="69.0" prefWidth="68.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="86.0" prefWidth="91.0">
                <children>
-                  <ImageView fitHeight="67.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="62.0" fitWidth="72.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/chat_icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" fx:id="hBoxConnection" alignment="CENTER" layoutX="20.0" layoutY="240.0" prefHeight="66.0" prefWidth="68.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="95.0" prefHeight="85.0" prefWidth="91.0">
                <children>
-                  <ImageView fitHeight="69.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="63.0" fitWidth="66.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/connection.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" fx:id="hBoxDeskMe" alignment="CENTER" prefHeight="70.0" prefWidth="68.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="180.0" prefHeight="85.0" prefWidth="91.0">
                <children>
-                  <ImageView fitHeight="66.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="73.0" fitWidth="68.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/DeskMe_Icon.png" />
                      </image>
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" fx:id="hBoxSettings" alignment="CENTER" layoutX="20.0" layoutY="252.0" prefHeight="70.0" prefWidth="68.0">
+            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="265.0" prefHeight="85.0" prefWidth="91.0">
                <children>
-                  <ImageView fitHeight="66.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="66.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../image/settings_icon.png" />
                      </image>
                   </ImageView>
                </children>
-               <VBox.margin>
-                  <Insets top="300.0" />
-               </VBox.margin>
             </HBox>
-         </children></VBox>
-      <Pane fx:id="pnHome" layoutX="88.0" prefHeight="720.0" prefWidth="1196.0">
-         <children>
-            <Label fx:id="lblWelcome" layoutX="23.0" layoutY="25.0" text="Welcome to DeskMe" />
-            <Line endX="1059.0" layoutX="115.0" layoutY="679.0" startX="-100.0" />
-            <Label fx:id="lblConnection" layoutX="34.0" layoutY="688.0" text="Connection status" />
-            <Circle fx:id="crlConnectionStatus" fill="#22eb5b" layoutX="23.0" layoutY="698.0" radius="5.0" stroke="#eeeeee" strokeType="INSIDE" strokeWidth="0.0" />
-            <Button fx:id="btnCreateSession" layoutX="1004.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnCreateSessionOnAction" prefHeight="41.0" prefWidth="171.0" text="Create a Session" />
-            <Button fx:id="btnAbortSession" layoutX="823.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnAbortSessionOnAction" prefHeight="41.0" prefWidth="171.0" text="Abort the Session" />
-            <Pane fx:id="pnSession" layoutX="53.0" layoutY="79.0" prefHeight="573.0" prefWidth="1096.0">
-               <children>
-                  <ImageView fx:id="imgPreview" fitHeight="582.0" fitWidth="1096.0" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </Pane>
-            <TextField layoutX="436.0" layoutY="29.0" prefHeight="27.0" prefWidth="191.0" promptText="Enter Session ID" />
-            <Button fx:id="btnJoinSession" layoutX="643.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnJoinSessionOnAction" prefHeight="41.0" prefWidth="171.0" text="Join a Session" />
          </children>
-      </Pane>
+      </VBox>
+      <Line endX="455.0" layoutX="242.0" layoutY="529.0" startX="-128.0" />
+      <Label layoutX="140.0" layoutY="544.0" text="Label" />
+      <Circle fill="#18f532" layoutX="126.0" layoutY="553.0" radius="6.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+      <Label fx:id="lblWelcome" layoutX="111.0" layoutY="22.0" text="Welcome to DeskMe" />
+      <HBox fx:id="hBoxSession" alignment="CENTER" layoutX="136.0" layoutY="126.0" prefHeight="66.0" prefWidth="557.0">
+         <children>
+            <Button fx:id="btnCreateSession" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#btnCreateSessionOnAction" prefHeight="56.0" prefWidth="60.0">
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+               <graphic>
+                  <ImageView fitHeight="57.0" fitWidth="101.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../image/add_icon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Label fx:id="lblCreateSession" text="Create a Session">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

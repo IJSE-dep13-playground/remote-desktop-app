@@ -1,7 +1,11 @@
 package lk.ijse.dep13;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lk.ijse.dep13.util.AppRouter;
+
+import java.io.IOException;
 
 public class ClientAppInitializer extends Application {
 
@@ -10,7 +14,11 @@ public class ClientAppInitializer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
-
+    public void start(Stage primaryStage) throws IOException {
+        Scene scene = new Scene(AppRouter.getContainer(AppRouter.Routes.MAIN).load());
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        primaryStage.setTitle("Remote Desktop Application");
+        primaryStage.centerOnScreen();
     }
 }

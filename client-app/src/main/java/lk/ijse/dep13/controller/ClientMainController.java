@@ -1,4 +1,4 @@
-package lk.ijse.dep13.control;
+package lk.ijse.dep13.controller;
 
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -15,7 +15,7 @@ import javafx.scene.shape.Circle;
 import java.io.*;
 import java.net.Socket;
 
-public class MainController {
+public class ClientMainController {
     public VBox vBoxNavBar;
     public HBox hBoxVideo;
     public HBox hBoxChat;
@@ -38,6 +38,7 @@ public class MainController {
     private ObjectInputStream ois;
     private boolean sessionActive = false;
 
+
     public void initialize() throws IOException {
         imgPreview.fitWidthProperty().bind(pnSession.widthProperty());
         imgPreview.fitHeightProperty().bind(pnSession.heightProperty());
@@ -45,22 +46,22 @@ public class MainController {
 
     public void btnCreateSessionOnAction(ActionEvent actionEvent) throws IOException {
         if (sessionActive) return;
-            try {
-                socket = new Socket("192.168.229.138", 9080);
-                oos = new ObjectOutputStream(socket.getOutputStream());
-                ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-                sessionActive = true;
-                btnAbortSession.setDisable(false);
-                btnCreateSession.setDisable(true);
-                lblConnection.setText("Connected");
-                crlConnectionStatus.setStyle("-fx-fill: green;");
+        try {
+            socket = new Socket("127.0.0.1", 9080);
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+            sessionActive = true;
+            btnAbortSession.setDisable(false);
+            btnCreateSession.setDisable(true);
+            lblConnection.setText("Connected");
+            crlConnectionStatus.setStyle("-fx-fill: green;");
 
-                // Start receiving and displaying images
-                startImageReceiver();
-            } catch (IOException e) {
-                e.printStackTrace();
-                lblConnection.setText("Connection Failed");
-                crlConnectionStatus.setStyle("-fx-fill: red;");
+            // Start receiving and displaying images
+            startImageReceiver();
+        } catch (IOException e) {
+            e.printStackTrace();
+            lblConnection.setText("Connection Failed");
+            crlConnectionStatus.setStyle("-fx-fill: red;");
         }
     }
 
