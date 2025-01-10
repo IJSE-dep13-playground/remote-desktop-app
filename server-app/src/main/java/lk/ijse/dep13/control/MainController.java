@@ -46,7 +46,7 @@ public class MainController {
     public void btnCreateSessionOnAction(ActionEvent actionEvent) throws IOException {
         if (sessionActive) return;
             try {
-                socket = new Socket("192.168.8.102", 9080);
+                socket = new Socket("192.168.229.138", 9080);
                 oos = new ObjectOutputStream(socket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
                 sessionActive = true;
