@@ -3,21 +3,21 @@
 }
 
 #vBoxNavBar{
-    -fx-background-color: linear-gradient(to bottom, #0cb206, #217f03);
+    -fx-background-color: linear-gradient(to bottom, #007bff, #0056b3);
     -fx-padding: 10;
     -fx-spacing: 10;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.2, 0, 2);
 }
 
 #nav-icon{
-    -fx-background-color: linear-gradient(to right, #d1f358, #c3f60f);
+    -fx-background-color: linear-gradient(to right, #b0d5f3, #8ebeea);
     -fx-background-radius: 15px;
     -fx-alignment: center;
     -fx-cursor: hand;
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.5, 0, 2);
 }
 #nav-icon:hover{
-    -fx-background-color: linear-gradient(to right, #f6cd4a, #daa119);
+    -fx-background-color: linear-gradient(to right, #98e1eb, #80cbe8);
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.2, 0, 2);
 }
 
@@ -26,6 +26,10 @@
     -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-text-fill: #1c4172;
+}
+
+#pnSession{
+    -fx-border-color: black;
 }
 
 #btnCreateSession{
@@ -45,17 +49,37 @@
     -fx-scale-y: 1.05;
 }
 
-#lblCreateSession{
+#btnAbortSession{
     -fx-font-family: Montserrat;
-    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
     -fx-text-fill: white;
-}
-
-#hBoxSession{
-    -fx-background-color: linear-gradient(to bottom, #6a6b6a, #3d423d);
+    -fx-background-color: linear-gradient(to bottom, #d63116, #ca2107);
     -fx-background-radius: 15px;
-    -fx-alignment: center;
-    -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
     -fx-transition: 0.3s ease-in-out;
+}
+
+#btnAbortSession:hover{
+    -fx-background-color: linear-gradient(to bottom, #e62e10, #c81f04);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+#btnJoinSession{
+    -fx-font-family: Montserrat;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom, #1a8be1, #097acd);
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+    -fx-transition: 0.3s ease-in-out;
+}
+#btnJoinSession:hover{
+    -fx-background-color: linear-gradient(to bottom, #2c98ea, #0c84db);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }

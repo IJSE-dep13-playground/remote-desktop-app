@@ -1,4 +1,4 @@
-package lk.ijse.dep13.control;
+package lk.ijse.dep13.controller;
 
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -15,7 +15,7 @@ import javafx.scene.shape.Circle;
 import java.io.*;
 import java.net.Socket;
 
-public class MainController {
+public class ClientMainController {
     public VBox vBoxNavBar;
     public HBox hBoxVideo;
     public HBox hBoxChat;
@@ -26,7 +26,6 @@ public class MainController {
     public Label lblWelcome;
     public HBox hBoxSettings;
     public Pane pnHome;
-    public Button btnCreateSession;
     public Button btnAbortSession;
     public Pane pnSession;
     public ImageView imgPreview;
@@ -38,30 +37,10 @@ public class MainController {
     private ObjectInputStream ois;
     private boolean sessionActive = false;
 
+
     public void initialize() throws IOException {
         imgPreview.fitWidthProperty().bind(pnSession.widthProperty());
         imgPreview.fitHeightProperty().bind(pnSession.heightProperty());
-    }
-
-    public void btnCreateSessionOnAction(ActionEvent actionEvent) throws IOException {
-        if (sessionActive) return;
-            try {
-                socket = new Socket("192.168.229.138", 9080);
-                oos = new ObjectOutputStream(socket.getOutputStream());
-                ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-                sessionActive = true;
-                btnAbortSession.setDisable(false);
-                btnCreateSession.setDisable(true);
-                lblConnection.setText("Connected");
-                crlConnectionStatus.setStyle("-fx-fill: green;");
-
-                // Start receiving and displaying images
-                startImageReceiver();
-            } catch (IOException e) {
-                e.printStackTrace();
-                lblConnection.setText("Connection Failed");
-                crlConnectionStatus.setStyle("-fx-fill: red;");
-        }
     }
 
     public void btnAbortSessionOnAction(ActionEvent actionEvent) {
@@ -70,7 +49,7 @@ public class MainController {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
-            btnCreateSession.setDisable(false);
+            btnJoinSession.setDisable(false);
             btnAbortSession.setDisable(true);
             lblConnection.setText("Disconnected");
             crlConnectionStatus.setStyle("-fx-fill: red;");
@@ -101,6 +80,23 @@ public class MainController {
     }
 
     public void btnJoinSessionOnAction(ActionEvent actionEvent) {
+        if (sessionActive) return;
+        try {
+            socket = new Socket("127.0.0.1", 9080);
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+            sessionActive = true;
+            btnAbortSession.setDisable(false);
+            btnJoinSession.setDisable(true);
+            lblConnection.setText("Connected");
+            crlConnectionStatus.setStyle("-fx-fill: green;");
 
+            // Start receiving and displaying images
+            startImageReceiver();
+        } catch (IOException e) {
+            e.printStackTrace();
+            lblConnection.setText("Connection Failed");
+            crlConnectionStatus.setStyle("-fx-fill: red;");
+        }
     }
 }

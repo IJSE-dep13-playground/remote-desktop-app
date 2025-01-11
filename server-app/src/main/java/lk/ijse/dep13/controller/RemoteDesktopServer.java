@@ -1,4 +1,4 @@
-package lk.ijse.dep13.control;
+package lk.ijse.dep13.controller;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -7,23 +7,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class RemoteDesktopServer {
 
-    public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(9080)) {
-            System.out.println("Server started. Waiting for connection...");
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = null;
+        try {
+            serverSocket = new ServerSocket(9080);
+            System.out.println("Server started on port 9090, Waiting for connection...");
+        } catch (BindException e) {
+            System.out.println("port 9090 already in use");
+            serverSocket = new ServerSocket(0);
+            System.out.println("Instead, server port is use " + serverSocket.getLocalPort());
+        }
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Client connected");
 
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected");
-
-                new Thread(() -> handleClient(clientSocket)).start();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            new Thread(() -> handleClient(clientSocket)).start();
         }
     }
 
