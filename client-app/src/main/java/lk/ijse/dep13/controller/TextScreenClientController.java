@@ -1,24 +1,19 @@
 package lk.ijse.dep13.controller;
 
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.skin.TableHeaderRow;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import org.w3c.dom.ls.LSOutput;
 
-import javax.print.DocFlavor;
 import java.io.*;
 
 import java.net.Socket;
-import java.nio.CharBuffer;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+
 
 public class TextScreenClientController {
 
@@ -29,8 +24,15 @@ public class TextScreenClientController {
     Socket socket;
     InputStream is;
     boolean isConnected = false;
+    OutputStream os;
 
-    public void initialize() {
+
+    public void initialize() throws IOException {
+
+       socket = new Socket("192.168.1.6", 9090);
+        InputStream is = socket.getInputStream();
+       os=socket.getOutputStream();
+
 
 
         Task<String> task = new Task<>() {
@@ -39,31 +41,39 @@ public class TextScreenClientController {
             @Override
             protected String call() throws Exception {
                 System.out.println(7);
-                Socket socket = new Socket("192.168.1.6", 9090);
+
                 System.out.println(8);
-                InputStream is = socket.getInputStream();
+               ;
                 BufferedInputStream bis = new BufferedInputStream(is);
-               //InputStream is = new InputStream(bis);
 
 
-            String chatHistory="";
-                while (true){
-                   char txt=(char)(is.read());
 
-                   String y=txt+"";
-                   chatHistory+=y;
+                String chatHistory = "";
+                while (true) {
+                    int read = is.read();
+                    char txt = (char) read;
+                    if (read == -1) {
+
+                        break;
+                    }
+                    String y = txt + "";
+                    chatHistory += y;
                     updateValue(chatHistory);
                 }
+                return "connection lost...";
             }
         };
 
-//        imgCamera.imageProperty().bind(task.valueProperty());
         txtAreaHistory.textProperty().bind(task.valueProperty());
         new Thread(task).start();
     }
 
     public void keyPressed(KeyEvent keyEvent) throws IOException {
-
+        if(keyEvent.getCode()== KeyCode.ENTER){
+            String text=txtScreen.getText();
+            os.write(text.getBytes());
+            os.flush();
+        }
 
     }
 

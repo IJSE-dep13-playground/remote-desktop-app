@@ -8,6 +8,6 @@
    <children>
       <TextArea fx:id="txtScreen" layoutX="47.0" layoutY="279.0" onKeyPressed="#keyPressed" onMouseClicked="#txtScreenOnMouseCLicked" prefHeight="37.0" prefWidth="491.0" />
       <TextArea fx:id="txtAreaHistory" layoutX="47.0" layoutY="65.0" prefHeight="200.0" prefWidth="491.0" />
-      <Button fx:id="btnStartServer" layoutX="545.0" layoutY="88.0" mnemonicParsing="false" onAction="#btnStartServerOnAction" prefHeight="26.0" prefWidth="96.0" text="start server" />
+      <Button fx:id="btnRestartServer" layoutX="545.0" layoutY="88.0" mnemonicParsing="false" onAction="#btnReStartServerOnAction" prefHeight="26.0" prefWidth="118.0" text="restart server" />
    </children>
 </AnchorPane>
