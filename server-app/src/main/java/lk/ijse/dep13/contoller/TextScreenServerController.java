@@ -41,7 +41,7 @@ public class TextScreenServerController {
 
             txtScreen.clear();
 
-            os.write(deliverMsg.getBytes());
+            os.write(txt.getBytes());
 
             os.flush();
            // os.close();
