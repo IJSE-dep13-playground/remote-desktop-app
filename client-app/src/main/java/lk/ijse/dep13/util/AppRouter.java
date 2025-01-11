@@ -4,7 +4,7 @@ import javafx.fxml.FXMLLoader;
 
 public class AppRouter {
     public enum Routes{
-        MAIN,SPLASH,TEXTSCREEN
+        MAIN,SPLASH,TEXTSCREEN,TEXTSCREENCLIENT
     }
     public static FXMLLoader getContainer(Routes route){
         FXMLLoader fxmlLoader = null;
@@ -14,6 +14,9 @@ public class AppRouter {
             fxmlLoader = new FXMLLoader(AppRouter.class.getResource("/scene/SplashScreen.fxml"));
         } if (route == Routes.TEXTSCREEN){
             fxmlLoader = new FXMLLoader(AppRouter.class.getResource("/scene/TextScreen.fxml"));
+        }
+        if (route == Routes.TEXTSCREENCLIENT){
+            fxmlLoader = new FXMLLoader(AppRouter.class.getResource("/scene/TextScreenClient.fxml"));
         }return fxmlLoader;
     }
 }

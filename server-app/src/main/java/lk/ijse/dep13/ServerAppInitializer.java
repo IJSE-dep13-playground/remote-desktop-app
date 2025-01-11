@@ -19,7 +19,7 @@ public class ServerAppInitializer extends Application {
         Scene scene = new Scene(AppRouter.getContainer(AppRouter.Routes.TEXTSCREEN).load());
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setTitle("Remote Desktop Application");
+        primaryStage.setTitle("text screen remote");
         primaryStage.centerOnScreen();
     }
 }
