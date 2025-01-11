@@ -26,7 +26,6 @@ public class ClientMainController {
     public Label lblWelcome;
     public HBox hBoxSettings;
     public Pane pnHome;
-    public Button btnCreateSession;
     public Button btnAbortSession;
     public Pane pnSession;
     public ImageView imgPreview;
@@ -44,34 +43,13 @@ public class ClientMainController {
         imgPreview.fitHeightProperty().bind(pnSession.heightProperty());
     }
 
-    public void btnCreateSessionOnAction(ActionEvent actionEvent) throws IOException {
-        if (sessionActive) return;
-        try {
-            socket = new Socket("127.0.0.1", 9080);
-            oos = new ObjectOutputStream(socket.getOutputStream());
-            ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-            sessionActive = true;
-            btnAbortSession.setDisable(false);
-            btnCreateSession.setDisable(true);
-            lblConnection.setText("Connected");
-            crlConnectionStatus.setStyle("-fx-fill: green;");
-
-            // Start receiving and displaying images
-            startImageReceiver();
-        } catch (IOException e) {
-            e.printStackTrace();
-            lblConnection.setText("Connection Failed");
-            crlConnectionStatus.setStyle("-fx-fill: red;");
-        }
-    }
-
     public void btnAbortSessionOnAction(ActionEvent actionEvent) {
         try {
             sessionActive = false;
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
-            btnCreateSession.setDisable(false);
+            btnJoinSession.setDisable(false);
             btnAbortSession.setDisable(true);
             lblConnection.setText("Disconnected");
             crlConnectionStatus.setStyle("-fx-fill: red;");
@@ -102,6 +80,23 @@ public class ClientMainController {
     }
 
     public void btnJoinSessionOnAction(ActionEvent actionEvent) {
+        if (sessionActive) return;
+        try {
+            socket = new Socket("127.0.0.1", 9080);
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+            sessionActive = true;
+            btnAbortSession.setDisable(false);
+            btnJoinSession.setDisable(true);
+            lblConnection.setText("Connected");
+            crlConnectionStatus.setStyle("-fx-fill: green;");
 
+            // Start receiving and displaying images
+            startImageReceiver();
+        } catch (IOException e) {
+            e.printStackTrace();
+            lblConnection.setText("Connection Failed");
+            crlConnectionStatus.setStyle("-fx-fill: red;");
+        }
     }
 }

@@ -10,14 +10,14 @@
 }
 
 #nav-icon{
-    -fx-background-color: linear-gradient(to right, #5fc6fd, #3f9bf6);
+    -fx-background-color: linear-gradient(to right, #b0d5f3, #8ebeea);
     -fx-background-radius: 15px;
     -fx-alignment: center;
     -fx-cursor: hand;
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.5, 0, 2);
 }
 #nav-icon:hover{
-    -fx-background-color: linear-gradient(to right, #81cef8, #54a6f8);
+    -fx-background-color: linear-gradient(to right, #98e1eb, #80cbe8);
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.2, 0, 2);
 }
 
