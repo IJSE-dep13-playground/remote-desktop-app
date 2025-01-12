@@ -13,7 +13,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
-//import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.Webcam;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -32,6 +32,7 @@ public class ServerMainController {
     public VBox vBoxNavBar;
     public AnchorPane root;
     public HBox hBoxFileSender;
+    public HBox hBoxVideo;
 
     private ServerSocket serverSocket = null;
     private Socket localSocket = null;
@@ -102,26 +103,26 @@ public class ServerMainController {
     }
 
     public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) {
-//        Webcam webcam = Webcam.getDefault();
-//        webcam.open();
-//
-//        new Thread(() -> {
-//            try {
-//                OutputStream os = localSocket.getOutputStream();
-//                BufferedOutputStream bos = new BufferedOutputStream(os);
-//                ObjectOutputStream oos = new ObjectOutputStream(bos);
-//
-//                while (true) {
-//                    BufferedImage bufferedImage = webcam.getImage();
-//                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                    ImageIO.write(bufferedImage,"jpeg",baos);
-//                    oos.writeObject(baos.toByteArray());
-//                    oos.flush();
-//                    Thread.sleep(1000/27);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
+        Webcam webcam = Webcam.getDefault();
+        webcam.open();
+
+        new Thread(() -> {
+            try {
+                OutputStream os = localSocket.getOutputStream();
+                BufferedOutputStream bos = new BufferedOutputStream(os);
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+                while (true) {
+                    BufferedImage bufferedImage = webcam.getImage();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.write(bufferedImage,"jpeg",baos);
+                    oos.writeObject(baos.toByteArray());
+                    oos.flush();
+                    Thread.sleep(1000/27);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }
