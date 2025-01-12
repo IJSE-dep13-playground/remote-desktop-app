@@ -62,11 +62,11 @@
             </HBox>
          </children>
       </VBox>
-      <Line endX="455.0" layoutX="242.0" layoutY="529.0" startX="-128.0" />
-      <Label layoutX="140.0" layoutY="544.0" text="Connection status" />
-      <Circle fill="#18f532" layoutX="126.0" layoutY="553.0" radius="6.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-      <Label fx:id="lblWelcome" layoutX="120.0" layoutY="22.0" text="Welcome to DeskMe" />
-      <HBox fx:id="hBoxSession" alignment="CENTER" layoutX="136.0" layoutY="126.0" prefHeight="66.0" prefWidth="557.0" AnchorPane.rightAnchor="25.0">
+      <Line endX="455.0" layoutX="242.0" layoutY="529.0" startX="-128.0" AnchorPane.bottomAnchor="46.5" />
+      <Label fx:id="lblConnection" layoutX="140.0" layoutY="544.0" text="Connection status" AnchorPane.bottomAnchor="13.0" />
+      <Circle fx:id="crlStatus" fill="#18f532" layoutX="126.0" layoutY="553.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="17.0" />
+      <Label fx:id="lblWelcome" layoutX="120.0" layoutY="22.0" text="Welcome to DeskMe" AnchorPane.topAnchor="22.0" />
+      <HBox fx:id="hBoxSession" alignment="CENTER" layoutX="136.0" layoutY="126.0" prefHeight="66.0" prefWidth="557.0" AnchorPane.leftAnchor="138.0" AnchorPane.rightAnchor="25.0">
          <children>
             <Button fx:id="btnCreateSession" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#btnCreateSessionOnAction" prefHeight="40.0" prefWidth="40.0">
                <HBox.margin>
