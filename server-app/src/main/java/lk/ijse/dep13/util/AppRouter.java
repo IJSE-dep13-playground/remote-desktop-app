@@ -12,6 +12,7 @@ public class AppRouter {
             fxmlLoader = new FXMLLoader(AppRouter.class.getResource("/scene/MainScene.fxml"));
         } if (route == Routes.SPLASH){
             fxmlLoader = new FXMLLoader(AppRouter.class.getResource("/scene/SplashScreen.fxml"));
-        } return fxmlLoader;
+        }
+        return fxmlLoader;
     }
 }

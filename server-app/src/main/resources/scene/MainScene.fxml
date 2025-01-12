@@ -11,11 +11,11 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" stylesheets="@../css/MainScene.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
+<AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" stylesheets="@../sharedAppCSS/MainScene.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
    <children>
       <VBox fx:id="vBoxNavBar" alignment="TOP_CENTER" prefHeight="576.0" prefWidth="95.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox id="nav-icon" alignment="CENTER" prefHeight="65.0" prefWidth="60.0">
+            <HBox id="nav-icon" fx:id="hBoxVideo" alignment="CENTER" onMouseClicked="#hBoxVideoOnMouseClicked" prefHeight="65.0" prefWidth="60.0">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -33,7 +33,7 @@
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="95.0" prefHeight="65.0" prefWidth="60.0">
+            <HBox id="nav-icon" fx:id="hBoxFileSender" alignment="CENTER" layoutX="10.0" layoutY="95.0" onMouseClicked="#hBoxFileSenderOnMouseClicked" prefHeight="65.0" prefWidth="60.0">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
