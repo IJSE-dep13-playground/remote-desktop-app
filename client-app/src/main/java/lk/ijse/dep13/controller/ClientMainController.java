@@ -3,6 +3,7 @@ package lk.ijse.dep13.controller;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -38,11 +39,13 @@ public class ClientMainController {
     public AnchorPane root;
     public Button btnJoinSession;
     public HBox hBoxFileSender;
+    public ImageView imgVideo;
 
     private Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean sessionActive = false;
+
 
 
     public void initialize() throws IOException {
@@ -102,6 +105,7 @@ public class ClientMainController {
             startImageReceiver();
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR,null,"Connection Issue",null,"Your connection is failed to connect");
             lblConnection.setText("Connection Failed");
             crlConnectionStatus.setStyle("-fx-fill: red;");
         }
@@ -115,7 +119,31 @@ public class ClientMainController {
         stage.show();
     }
 
-    public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) {
+    public void showAlert(Alert.AlertType alertType, String message, String title, String headerText, String contentText) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.showAndWait();
+    }
 
+    public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) {
+//        if (sessionActive) {
+//            Task<Image> task = new Task<>() {
+//                @Override
+//                protected Image call() throws Exception {
+//                    InputStream is = socket.getInputStream();
+//                    BufferedInputStream bis = new BufferedInputStream(is);
+//                    ObjectInputStream ois = new ObjectInputStream(bis);
+//
+//                    while (true){
+//                        byte[] bytes = (byte[]) ois.readObject();
+//                        updateValue(new Image(new ByteArrayInputStream(bytes)));
+//                    }
+//                }
+//            };
+//            imgVideo.imageProperty().bind(task.valueProperty());
+//            new Thread(task).start();
+//        }
     }
 }
