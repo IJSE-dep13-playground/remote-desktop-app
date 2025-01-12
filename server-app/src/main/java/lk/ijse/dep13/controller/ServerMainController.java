@@ -1,5 +1,6 @@
 package lk.ijse.dep13.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -42,20 +43,37 @@ public class ServerMainController {
     }
 
     public void btnCreateSessionOnAction(ActionEvent actionEvent) throws IOException {
-        try {
-            serverSocket = new ServerSocket(9080);
-            System.out.println("Server started on port 9080, Waiting for connection...");
-        } catch (BindException e) {
-            serverSocket = new ServerSocket(0);
-            switchAlert(Alert.AlertType.INFORMATION,"Port Change","port 9080 already in use","Instead, server port is use" + serverSocket.getLocalPort());
-        }
-        while (true) {
-            localSocket = serverSocket.accept();
-            switchAlert(Alert.AlertType.INFORMATION,"Connected",null, "Client connected from " + localSocket.getInetAddress().getHostAddress());
-            System.out.println("Client connected");
+        new Thread(() -> {
+            try {
+                serverSocket = new ServerSocket(9080);
+                System.out.println("Server started on port 9080, Waiting for connection...");
+            } catch (BindException e) {
+                try {
+                    serverSocket = new ServerSocket(0);
+                    int newPort = serverSocket.getLocalPort();
+                    Platform.runLater(() -> switchAlert(Alert.AlertType.INFORMATION, "Port Change", "Port 9080 already in use", "Instead, server is using port " + newPort));
+                    System.out.println("Server started on port " + newPort);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            while (!serverSocket.isClosed()) {
+                try{
+                    localSocket = serverSocket.accept();
+                    String clientAddress = localSocket.getInetAddress().getHostAddress();
+                    System.out.println("Client connected from: " + clientAddress);
 
-            new Thread(() -> handleClient(localSocket)).start();
-        }
+                    Platform.runLater(() -> switchAlert(Alert.AlertType.INFORMATION, "Connected", null, "Client connected from " + clientAddress));
+                    new Thread(() -> handleClient(localSocket)).start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private static void handleClient(Socket clientSocket) {
@@ -103,26 +121,26 @@ public class ServerMainController {
     }
 
     public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) {
-        Webcam webcam = Webcam.getDefault();
-        webcam.open();
-
-        new Thread(() -> {
-            try {
-                OutputStream os = localSocket.getOutputStream();
-                BufferedOutputStream bos = new BufferedOutputStream(os);
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
-
-                while (true) {
-                    BufferedImage bufferedImage = webcam.getImage();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage,"jpeg",baos);
-                    oos.writeObject(baos.toByteArray());
-                    oos.flush();
-                    Thread.sleep(1000/27);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+//        Webcam webcam = Webcam.getDefault();
+//        webcam.open();
+//
+//        new Thread(() -> {
+//            try {
+//                OutputStream os = localSocket.getOutputStream();
+//                BufferedOutputStream bos = new BufferedOutputStream(os);
+//                ObjectOutputStream oos = new ObjectOutputStream(bos);
+//
+//                while (true) {
+//                    BufferedImage bufferedImage = webcam.getImage();
+//                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                    ImageIO.write(bufferedImage,"jpeg",baos);
+//                    oos.writeObject(baos.toByteArray());
+//                    oos.flush();
+//                    Thread.sleep(1000/27);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
     }
 }
