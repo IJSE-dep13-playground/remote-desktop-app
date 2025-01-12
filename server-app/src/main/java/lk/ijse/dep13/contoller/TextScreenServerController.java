@@ -19,54 +19,92 @@ import java.security.spec.ECField;
 public class TextScreenServerController {
     public TextArea txtScreen;
     public TextArea txtAreaHistory;
-    public Button btnStartServer;
     String txtHistory = "";
     ServerSocket serverSocket;
     Socket localSocket;
     OutputStream os;
-    private volatile boolean connectionEstabilished=false;
+    private volatile boolean connectionEstabilished = false;
+    private boolean serverSocketOpen = false;
+    //private  boolean clientAccepted=false;
 
 
     public void initialize() throws IOException {
-        serverSocket = new ServerSocket(9090);
-        txtAreaHistory.setText("waiting for the client to connect...");
+        openServerSocket();
+     openOutputStream();
 
-        new Thread(()->{
-          try{
-              localSocket = serverSocket.accept();
-              connectionEstabilished=true;
-            os=localSocket.getOutputStream();
-            txtAreaHistory.setText("client is online and connected");
-            txtScreen.setDisable(false);
-            txtScreen.requestFocus();
-            txtAreaHistory.setEditable(false);
-            txtScreen.setDisable(true);}catch (Exception e){}
-        }).start();
 
-        if(connectionEstabilished){
-            System.out.println("connection establoshe");
-           Task<String> task = new Task<>(){
-               @Override
-               protected String call() throws Exception {
-                   InputStream is=localSocket.getInputStream();
-                   while(true){
-                       int read=is.read();
-                       if(read==-1) break;
-                      txtHistory+=(char)read+"";
-                       updateValue(txtHistory);
-
-                   }
-                   return "connection lost";
-               }
-           };
-           new Thread(task).start();;
-           txtAreaHistory.textProperty().bind(task.valueProperty());
-        }else{
-            System.out.println("fail");
-        }
 
     }
 
+    public void openServerSocket() {
+        try {
+            serverSocket = new ServerSocket(9090);
+            serverSocketOpen = true;
+            txtAreaHistory.setText("server started.");
+        } catch (Exception e) {
+            serverSocketOpen=false;
+            txtAreaHistory.setText("error starting the server");
+        }
+    }
+
+
+    public boolean accepetClient() {
+        try {
+            localSocket = serverSocket.accept();
+           return true;
+        } catch (Exception e) {
+            txtAreaHistory.setText("Error occured while trying to accept the client");
+            return false;
+        }
+    }
+
+    public void openOutputStream() {
+
+        new Thread(() -> {
+            try {
+                if (accepetClient()){
+                connectionEstabilished = true;
+                os = localSocket.getOutputStream();
+
+                txtScreen.setDisable(false);
+                txtScreen.requestFocus();
+                txtAreaHistory.setEditable(false);
+                txtScreen.setDisable(true);}
+            } catch (Exception e) {
+            }
+        }).start();
+
+    }
+
+    public void openInputStream() {
+        openOutputStream();
+        if (connectionEstabilished) {
+            System.out.println("connection established");
+            txtScreen.setDisable(false);
+
+            Task<String> task = new Task<>() {
+                @Override
+                protected String call() throws Exception {
+
+                    InputStream is = localSocket.getInputStream();
+                    while (true) {
+                        int read = is.read();
+                        if (read == -1) break;
+                        txtHistory += (char) read + "";
+                        updateValue(txtHistory);
+
+                    }
+                    return "connection lost";
+                }
+            };
+            new Thread(task).start();
+            ;
+            txtAreaHistory.textProperty().bind(task.valueProperty());
+        } else {
+
+            txtAreaHistory.setText("client is offline");
+        }
+    }
 
     public void keyPressed(KeyEvent keyEvent) throws IOException, InterruptedException {
 
@@ -81,37 +119,13 @@ public class TextScreenServerController {
     }
 
     public void txtScreenOnMouseCLicked(MouseEvent mouseEvent) {
-        Task<String> task = new Task<>(){
-            @Override
-            protected String call() throws Exception {
-                InputStream is=localSocket.getInputStream();
-                while(true){
-                    int read=is.read();
-                    if(read==-1) break;
-                    txtHistory+=(char)read+"";
-                    updateValue(txtHistory);
 
-                }
-                return "connection lost";
-            }
-        };
-        new Thread(task).start();;
-        txtAreaHistory.textProperty().bind(task.valueProperty());
         txtScreen.clear();
     }
 
 
-
     public void btnReStartServerOnAction(ActionEvent actionEvent) {
-       try{ localSocket = serverSocket.accept();
-        os=localSocket.getOutputStream();
-        txtAreaHistory.setText("client is online and connected");
-        txtScreen.setDisable(false);
-        txtScreen.requestFocus();
-        txtAreaHistory.setEditable(false);
-        txtScreen.setDisable(true);
-    }catch (Exception e){
-           txtAreaHistory.setText("error occured while trying to start the server.");
-       }}
-}
+        openInputStream();
 
+    }
+}

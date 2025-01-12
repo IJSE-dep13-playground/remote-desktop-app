@@ -28,10 +28,15 @@ public class TextScreenClientController {
 
 
     public void initialize() throws IOException {
+        connectToServer();
+    }
 
-       socket = new Socket("192.168.1.6", 9090);
+
+    public void connectToServer(){
+        try{
+        socket = new Socket("192.168.1.6", 9090);
         InputStream is = socket.getInputStream();
-       os=socket.getOutputStream();
+        os=socket.getOutputStream();
 
 
 
@@ -40,13 +45,6 @@ public class TextScreenClientController {
 
             @Override
             protected String call() throws Exception {
-                System.out.println(7);
-
-                System.out.println(8);
-               ;
-                BufferedInputStream bis = new BufferedInputStream(is);
-
-
 
                 String chatHistory = "";
                 while (true) {
@@ -65,23 +63,23 @@ public class TextScreenClientController {
         };
 
         txtAreaHistory.textProperty().bind(task.valueProperty());
-        new Thread(task).start();
+        new Thread(task).start();}catch (Exception e){
+            txtAreaHistory.setText("Could'nt connect to server. Try again...");
+        }
     }
-
     public void keyPressed(KeyEvent keyEvent) throws IOException {
         if(keyEvent.getCode()== KeyCode.ENTER){
             String text=txtScreen.getText();
             os.write(text.getBytes());
             os.flush();
+            txtScreen.clear();
         }
 
     }
 
     public void btnConnectToServerOnAction(ActionEvent actionEvent) throws IOException, InterruptedException {
 
-        socket = new Socket("192.168.229.165", 9090);
-        txtAreaHistory.setText("succesfully connected to server");
-        btnViewMessages.setDisable(false);
+      connectToServer();
 
 
     }
