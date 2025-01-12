@@ -1,20 +1,24 @@
 package lk.ijse.dep13.controller;
 
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
+//import com.github.sarxos.webcam.Webcam;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,9 +31,16 @@ public class ServerMainController {
     public Label lblCreateSession;
     public VBox vBoxNavBar;
     public AnchorPane root;
+    public HBox hBoxFileSender;
+
+    private ServerSocket serverSocket = null;
+    private Socket localSocket = null;
+
+    public void initialize() {
+
+    }
 
     public void btnCreateSessionOnAction(ActionEvent actionEvent) throws IOException {
-        ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(9080);
             System.out.println("Server started on port 9080, Waiting for connection...");
@@ -38,11 +49,11 @@ public class ServerMainController {
             switchAlert(Alert.AlertType.INFORMATION,"Port Change","port 9080 already in use","Instead, server port is use" + serverSocket.getLocalPort());
         }
         while (true) {
-            Socket clientSocket = serverSocket.accept();
-            switchAlert(Alert.AlertType.INFORMATION,"Connected",null, "Client connected from " + clientSocket.getInetAddress().getHostAddress());
+            localSocket = serverSocket.accept();
+            switchAlert(Alert.AlertType.INFORMATION,"Connected",null, "Client connected from " + localSocket.getInetAddress().getHostAddress());
             System.out.println("Client connected");
 
-            new Thread(() -> handleClient(clientSocket)).start();
+            new Thread(() -> handleClient(localSocket)).start();
         }
     }
 
@@ -56,7 +67,7 @@ public class ServerMainController {
                 // Capture the screen
                 BufferedImage screen = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(screen, "png", baos);
+                ImageIO.write(screen, "jpeg", baos);
                 byte[] imagesBytes = baos.toByteArray();
                 oos.writeObject(imagesBytes);
                 oos.flush();
@@ -74,11 +85,43 @@ public class ServerMainController {
             e.printStackTrace();
         }
     }
-    private void switchAlert(Alert.AlertType AlertType, String title, String header, String content) {
-        Alert alert = new Alert(AlertType);
+    private void switchAlert(Alert.AlertType alertType, String title, String header, String content) {
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    public void hBoxFileSenderOnMouseClicked(MouseEvent mouseEvent) throws IOException, ClassNotFoundException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER).load());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) {
+//        Webcam webcam = Webcam.getDefault();
+//        webcam.open();
+//
+//        new Thread(() -> {
+//            try {
+//                OutputStream os = localSocket.getOutputStream();
+//                BufferedOutputStream bos = new BufferedOutputStream(os);
+//                ObjectOutputStream oos = new ObjectOutputStream(bos);
+//
+//                while (true) {
+//                    BufferedImage bufferedImage = webcam.getImage();
+//                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                    ImageIO.write(bufferedImage,"jpeg",baos);
+//                    oos.writeObject(baos.toByteArray());
+//                    oos.flush();
+//                    Thread.sleep(1000/27);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
     }
 }

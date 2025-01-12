@@ -2,15 +2,21 @@ package lk.ijse.dep13.controller;
 
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 
 import java.io.*;
 import java.net.Socket;
@@ -31,6 +37,7 @@ public class ClientMainController {
     public ImageView imgPreview;
     public AnchorPane root;
     public Button btnJoinSession;
+    public HBox hBoxFileSender;
 
     private Socket socket;
     private ObjectOutputStream oos;
@@ -98,5 +105,17 @@ public class ClientMainController {
             lblConnection.setText("Connection Failed");
             crlConnectionStatus.setStyle("-fx-fill: red;");
         }
+    }
+
+    public void hBoxFileSenderOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER).load());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) {
+
     }
 }
