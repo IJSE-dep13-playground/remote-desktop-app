@@ -23,109 +23,123 @@ public class TextScreenServerController {
     ServerSocket serverSocket;
     Socket localSocket;
     OutputStream os;
-    private volatile boolean connectionEstabilished = false;
-    private boolean serverSocketOpen = false;
-    //private  boolean clientAccepted=false;
-
+    InputStream is;
+    private boolean isServerSocketOpen = false;
+    private boolean isClientAccepted = false;
+    private boolean isInputStreamOpen = false;
+    private boolean isOutPutStreamOpen = false;
 
     public void initialize() throws IOException {
         openServerSocket();
-     openOutputStream();
-
-
-
+        new Thread(() -> {
+            acceptClientRequest();
+            acceptInputStream();
+            readInput();
+        }).start();
     }
 
     public void openServerSocket() {
         try {
             serverSocket = new ServerSocket(9090);
-            serverSocketOpen = true;
-            txtAreaHistory.setText("server started.");
+            isServerSocketOpen = true;
         } catch (Exception e) {
-            serverSocketOpen=false;
-            txtAreaHistory.setText("error starting the server");
+
+            txtAreaHistory.setText("could not open the server socket");
+            isServerSocketOpen = false;
         }
     }
 
-
-    public boolean accepetClient() {
-        try {
-            localSocket = serverSocket.accept();
-           return true;
-        } catch (Exception e) {
-            txtAreaHistory.setText("Error occured while trying to accept the client");
-            return false;
-        }
-    }
-
-    public void openOutputStream() {
-
-        new Thread(() -> {
+    public void acceptClientRequest() {
+        if (isClientAccepted) return;
+        if (isServerSocketOpen) {
             try {
-                if (accepetClient()){
-                connectionEstabilished = true;
-                os = localSocket.getOutputStream();
+                txtAreaHistory.setText("waiting for the client to request connection...");
 
-                txtScreen.setDisable(false);
-                txtScreen.requestFocus();
-                txtAreaHistory.setEditable(false);
-                txtScreen.setDisable(true);}
+                localSocket = serverSocket.accept();
+                txtAreaHistory.setText("client request accepted");
+
+                isClientAccepted = true;
+
             } catch (Exception e) {
-            }
-        }).start();
 
+                txtAreaHistory.setText("could not accept the client request");
+                isClientAccepted = false;
+            }
+        } else {
+            txtAreaHistory.setText("sever socket is not open");
+            isClientAccepted = false;
+        }
     }
 
-    public void openInputStream() {
-        openOutputStream();
-        if (connectionEstabilished) {
-            System.out.println("connection established");
-            txtScreen.setDisable(false);
+    public void acceptInputStream() {
+        if (isClientAccepted) {
+            try {
+                is = localSocket.getInputStream();
+                txtAreaHistory.setText("inputstream is open");
+                isInputStreamOpen = true;
+            } catch (Exception e) {
 
-            Task<String> task = new Task<>() {
-                @Override
-                protected String call() throws Exception {
+                txtAreaHistory.setText("An error occured while opening inputstream");
 
-                    InputStream is = localSocket.getInputStream();
-                    while (true) {
-                        int read = is.read();
-                        if (read == -1) break;
-                        txtHistory += (char) read + "";
-                        updateValue(txtHistory);
-
-                    }
-                    return "connection lost";
-                }
-            };
-            new Thread(task).start();
-            ;
-            txtAreaHistory.textProperty().bind(task.valueProperty());
+                isInputStreamOpen = false;
+            }
         } else {
 
-            txtAreaHistory.setText("client is offline");
+            txtAreaHistory.setText("client is not accepted");
+            isInputStreamOpen = false;
         }
     }
 
-    public void keyPressed(KeyEvent keyEvent) throws IOException, InterruptedException {
+    public void readInput() {
+        if (isInputStreamOpen) {
+            Task<String> task = new Task<String>() {
+                @Override
+                protected String call() throws Exception {
+                    int read;//=0;
+                    while (true) {
+                        read = is.read();
+                        if (read == -1) break;
+                        txtHistory += (char) read;
+                        updateValue(txtHistory);
+                    }
+                    return "input stream closed";
+                }
+            };
 
-
-        if (keyEvent.getCode() == KeyCode.ENTER) {
-            String txt = txtScreen.getText();
-            txtScreen.clear();
-            os.write(txt.getBytes());
-            os.flush();
+            new Thread(task).start();
+            txtAreaHistory.textProperty().bind(task.valueProperty());
+        } else {
+            txtAreaHistory.setText("error accepting input stream");
         }
+    }
 
+    public void btnReStartServerOnAction(ActionEvent actionEvent) {
+        acceptClientRequest();
+        acceptInputStream();
+        readInput();
+
+    }
+
+    public void keyPressed(KeyEvent keyEvent) {
+        if (isClientAccepted) {
+            try {
+                if (!isOutPutStreamOpen) {
+                    os = localSocket.getOutputStream();
+                    isOutPutStreamOpen = true;
+                }
+                if (keyEvent.getCode() == KeyCode.ENTER) {
+                    os.write(txtScreen.getText().getBytes());
+                    os.flush();
+                    txtScreen.clear();
+                }
+
+            } catch (Exception e) {
+                txtAreaHistory.setText("an error occured while trying to opn outstream");
+            }
+
+        }
     }
 
     public void txtScreenOnMouseCLicked(MouseEvent mouseEvent) {
-
-        txtScreen.clear();
-    }
-
-
-    public void btnReStartServerOnAction(ActionEvent actionEvent) {
-        openInputStream();
-
     }
 }
