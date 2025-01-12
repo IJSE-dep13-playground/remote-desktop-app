@@ -1,10 +1,12 @@
 package lk.ijse.dep13.controller;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,6 +23,7 @@ import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Optional;
 
 public class ClientMainController {
     public VBox vBoxNavBar;
@@ -46,26 +49,38 @@ public class ClientMainController {
     private ObjectInputStream ois;
     private boolean sessionActive = false;
 
-
-
     public void initialize() throws IOException {
+        btnAbortSession.setDisable(true);
         imgPreview.fitWidthProperty().bind(pnSession.widthProperty());
         imgPreview.fitHeightProperty().bind(pnSession.heightProperty());
     }
 
-    public void btnAbortSessionOnAction(ActionEvent actionEvent) {
-        try {
-            sessionActive = false;
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
+    public void btnJoinSessionOnAction(ActionEvent actionEvent) {
+        if (sessionActive) return;
+        new Thread(() -> {
+            try {
+                socket = new Socket("127.0.0.1", 9080);
+                oos = new ObjectOutputStream(socket.getOutputStream());
+                ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+                sessionActive = true;
+                Platform.runLater(() -> {
+                    btnAbortSession.setDisable(false);
+                    btnJoinSession.setDisable(true);
+                    lblConnection.setText("Connected");
+                    crlConnectionStatus.setStyle("-fx-fill: green;");
+                });
+                // Start receiving and displaying images
+                startImageReceiver();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    showAlert(Alert.AlertType.ERROR,null,"Connection Issue",null,"Your connection is failed to connect");
+                    lblConnection.setText("Connection Failed");
+                    crlConnectionStatus.setStyle("-fx-fill: red;");
+                });
+
             }
-            btnJoinSession.setDisable(false);
-            btnAbortSession.setDisable(true);
-            lblConnection.setText("Disconnected");
-            crlConnectionStatus.setStyle("-fx-fill: red;");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }).start();
     }
 
     private void startImageReceiver() {
@@ -74,13 +89,24 @@ public class ClientMainController {
             protected Image call() {
                 try {
                     while (sessionActive) {
-                        byte[] imageBytes = (byte[]) ois.readObject();
-                        ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-                        Image image = new Image(bais);
-                        updateValue(image);
+                        try{
+                            byte[] imageBytes = (byte[]) ois.readObject();
+                            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+                            Image image = new Image(bais);
+                            updateValue(image);
+                        } catch (EOFException e){
+                            System.err.println("Connection closed by server.");
+                            break;
+                        }
                     }
-                } catch (Exception e) {
-                    if (sessionActive) e.printStackTrace();
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 return null;
             }
@@ -89,26 +115,33 @@ public class ClientMainController {
         new Thread(task).start();
     }
 
-    public void btnJoinSessionOnAction(ActionEvent actionEvent) {
-        if (sessionActive) return;
-        try {
-            socket = new Socket("127.0.0.1", 9080);
-            oos = new ObjectOutputStream(socket.getOutputStream());
-            ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-            sessionActive = true;
-            btnAbortSession.setDisable(false);
-            btnJoinSession.setDisable(true);
-            lblConnection.setText("Connected");
-            crlConnectionStatus.setStyle("-fx-fill: green;");
-
-            // Start receiving and displaying images
-            startImageReceiver();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR,null,"Connection Issue",null,"Your connection is failed to connect");
-            lblConnection.setText("Connection Failed");
-            crlConnectionStatus.setStyle("-fx-fill: red;");
-        }
+    public void btnAbortSessionOnAction(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Abort");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to abort the session?");
+        Optional<ButtonType> result = alert.showAndWait();
+        new Thread(() -> {
+            if (result.get() == ButtonType.OK) {
+                sessionActive = false;
+                if (socket != null && !socket.isClosed()) {
+                    try {
+                        socket.close();
+                        Platform.runLater(() -> {
+                            btnJoinSession.setDisable(false);
+                            btnAbortSession.setDisable(true);
+                            lblConnection.setText("Disconnected");
+                            crlConnectionStatus.setStyle("-fx-fill: red;");
+                            showAlert(Alert.AlertType.INFORMATION,null,"Abort session",null,"Session aborted");
+                        });
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            } if (result.get() == ButtonType.CANCEL) {
+                alert.close();
+            }
+        }).start();
     }
 
     public void hBoxFileSenderOnMouseClicked(MouseEvent mouseEvent) throws IOException {
