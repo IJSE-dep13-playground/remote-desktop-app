@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="188.0" prefWidth="672.0" stylesheets="@../css/FileSender.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.sharedApp.controller.FileSenderController">
+<AnchorPane fx:id="root" prefHeight="188.0" prefWidth="672.0" stylesheets="@../sharedCss/FileSender.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.sharedApp.controller.FileSenderController">
    <children>
       <TextField fx:id="txtFileLocation" layoutX="28.0" layoutY="75.0" prefHeight="39.0" prefWidth="492.0" />
       <Button fx:id="btnSend" layoutX="28.0" layoutY="126.0" mnemonicParsing="false" onAction="#btnSendOnAction" prefHeight="39.0" prefWidth="117.0" text="Send" />

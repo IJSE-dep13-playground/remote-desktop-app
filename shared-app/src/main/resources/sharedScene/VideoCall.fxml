@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+<AnchorPane prefHeight="308.0" prefWidth="421.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.sharedApp.controller.VideoCallController">
+   <children>
+      <ImageView fx:id="imgVideoPreview" fitHeight="254.0" fitWidth="421.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <HBox alignment="CENTER" layoutY="254.0" prefHeight="54.0" prefWidth="421.0" style="-fx-background-color: GREY;">
+         <children>
+            <ImageView fx:id="imgCallDisconnect" fitHeight="49.0" fitWidth="54.0" onMouseClicked="#imgCallDisconnectOnMouseClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../sharedImage/call_disconnect_icon.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>
