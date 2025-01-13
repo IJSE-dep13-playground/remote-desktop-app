@@ -1,5 +1,6 @@
 package lk.ijse.dep13.controller;
 
+import com.github.sarxos.webcam.Webcam;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -19,8 +20,12 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lk.ijse.dep13.sharedApp.controller.VideoCallController;
+import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.util.Optional;
@@ -35,7 +40,6 @@ public class ClientMainController {
     public Label lblConnection;
     public Label lblWelcome;
     public HBox hBoxSettings;
-    public Pane pnHome;
     public Button btnAbortSession;
     public Pane pnSession;
     public ImageView imgPreview;
@@ -45,6 +49,8 @@ public class ClientMainController {
     public ImageView imgVideo;
 
     private Socket socket;
+    private Socket videoSocket;
+    private Socket audioSocket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean sessionActive = false;
@@ -60,6 +66,8 @@ public class ClientMainController {
         new Thread(() -> {
             try {
                 socket = new Socket("127.0.0.1", 9080);
+                videoSocket = new Socket("127.0.0.1", 9081);
+                audioSocket = new Socket("127.0.0.1", 9082);
                 oos = new ObjectOutputStream(socket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
                 sessionActive = true;
@@ -127,6 +135,8 @@ public class ClientMainController {
                 if (socket != null && !socket.isClosed()) {
                     try {
                         socket.close();
+                        videoSocket.close();
+                        audioSocket.close();
                         Platform.runLater(() -> {
                             btnJoinSession.setDisable(false);
                             btnAbortSession.setDisable(true);
@@ -160,23 +170,103 @@ public class ClientMainController {
         alert.showAndWait();
     }
 
-    public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) {
-//        if (sessionActive) {
-//            Task<Image> task = new Task<>() {
-//                @Override
-//                protected Image call() throws Exception {
-//                    InputStream is = socket.getInputStream();
-//                    BufferedInputStream bis = new BufferedInputStream(is);
-//                    ObjectInputStream ois = new ObjectInputStream(bis);
-//
-//                    while (true){
-//                        byte[] bytes = (byte[]) ois.readObject();
-//                        updateValue(new Image(new ByteArrayInputStream(bytes)));
-//                    }
-//                }
-//            };
-//            imgVideo.imageProperty().bind(task.valueProperty());
-//            new Thread(task).start();
-//        }
+    public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.VIDEO_CALL).load());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.show();
+
+        // Access the shared controller
+        VideoCallController videoCallController = VideoCallController.getInstance();
+
+        if (videoSocket != null && !videoSocket.isClosed()) {
+            new Thread(() -> {
+                try {
+                    sendVideoStream(videoSocket);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+            new Thread(() -> receiveVideoStream(videoSocket, videoCallController.imgVideoPreview)).start();
+            new Thread(() -> startAudioStreaming(audioSocket)).start();
+        }
+    }
+    private void sendVideoStream(Socket videoSocket) throws IOException {
+        try{
+            Webcam webcam = Webcam.getDefault();
+            webcam.open();
+            try {
+                OutputStream os = videoSocket.getOutputStream();
+                BufferedOutputStream bos = new BufferedOutputStream(os);
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+                while (!videoSocket.isClosed()) {
+                    BufferedImage bufferedImage = webcam.getImage();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.write(bufferedImage,"jpeg",baos);
+
+                    oos.writeObject(baos.toByteArray());
+                    oos.flush();
+                    Thread.sleep(1000/30);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("Video call disconnected");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void receiveVideoStream(Socket videoSocket, ImageView imgVideoPreview) {
+        if (sessionActive) {
+            Task<Image> task = new Task<>() {
+                @Override
+                protected Image call() throws Exception {
+                    InputStream is = videoSocket.getInputStream();
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    ObjectInputStream ois = new ObjectInputStream(bis);
+
+                    while (!videoSocket.isClosed()) {
+                        byte[] bytes = (byte[]) ois.readObject();
+                        updateValue(new Image(new ByteArrayInputStream(bytes)));
+                    }
+                    return null;
+                }
+            };
+            Platform.runLater(() -> {
+                imgVideoPreview.imageProperty().bind(task.valueProperty());
+            });
+            new Thread(task).start();
+        }
+    }
+
+    private void startAudioStreaming(Socket audioSocket) {
+        try {
+            AudioRecorder audioRecorder = new AudioRecorder();
+
+            // Start sending audio
+            new Thread(() -> {
+                try {
+                    audioRecorder.startRecording(audioSocket.getOutputStream());
+                } catch (IOException e) {
+                    System.err.println("Error in audio sending: " + e.getMessage());
+                }
+            }).start();
+
+            // Start receiving and playing audio
+            new Thread(() -> {
+                try {
+                    audioRecorder.startPlaying(audioSocket.getInputStream());
+                } catch (IOException e) {
+                    System.err.println("Error in audio receiving: " + e.getMessage());
+                }
+            }).start();
+
+        } catch (Exception e) {
+            System.err.println("Error in initializing audio recorder: " + e.getMessage());
+        }
     }
 }
