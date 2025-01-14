@@ -59,3 +59,21 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
     -fx-transition: 0.3s ease-in-out;
 }
+
+#btnEndSession{
+    -fx-font-family: Montserrat;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom, #d63116, #ca2107);
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+    -fx-transition: 0.3s ease-in-out;
+}
+
+#btnEndSession:hover{
+    -fx-background-color: linear-gradient(to bottom, #e62e10, #c81f04);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
