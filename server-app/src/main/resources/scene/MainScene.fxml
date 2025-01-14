@@ -43,11 +43,11 @@
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="180.0" prefHeight="65.0" prefWidth="60.0">
+            <HBox id="nav-icon" fx:id="hBoxDeskme" alignment="CENTER" layoutX="10.0" layoutY="180.0" onMouseClicked="#hBoxDeskmeOnMouseClicked" prefHeight="65.0" prefWidth="60.0">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../image/DeskMe_Icon.png" />
+                        <Image url="@../image/DeskMe_Icon_new.png" />
                      </image>
                   </ImageView>
                </children>
@@ -88,7 +88,7 @@
             </Label>
          </children>
       </HBox>
-      <Button fx:id="btnEndSession" layoutX="579.0" layoutY="484.0" mnemonicParsing="false" onAction="#btnEndSessionOnAction" text="End Session" />
+      <Button fx:id="btnEndSession" layoutX="579.0" layoutY="484.0" mnemonicParsing="false" onAction="#btnEndSessionOnAction" text="End Session" AnchorPane.bottomAnchor="59.0" AnchorPane.rightAnchor="22.0" />
    </children>
    <stylesheets>
       <URL value="@../css/MainScene.css" />

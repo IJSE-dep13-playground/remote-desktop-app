@@ -315,4 +315,13 @@ public class ServerMainController {
         }
     }
 
+    public void hBoxDeskmeOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.centerOnScreen();
+        stage.resizableProperty().setValue(false);
+        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.ABOUT).load());
+        stage.setScene(scene);
+        stage.show();
+    }
 }

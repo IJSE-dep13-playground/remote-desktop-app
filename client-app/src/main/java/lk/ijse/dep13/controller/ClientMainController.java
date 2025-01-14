@@ -293,4 +293,14 @@ public class ClientMainController {
             System.err.println("Error in initializing audio recorder: " + e.getMessage());
         }
     }
+
+    public void hBoxDeskMeOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+            Stage stage = new Stage(StageStyle.UTILITY);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.centerOnScreen();
+            stage.resizableProperty().setValue(false);
+            Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.ABOUT).load());
+            stage.setScene(scene);
+            stage.show();
+    }
 }

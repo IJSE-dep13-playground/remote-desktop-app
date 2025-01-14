@@ -53,11 +53,11 @@
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" fx:id="hBoxDeskMe" alignment="CENTER" prefHeight="70.0" prefWidth="68.0">
+            <HBox id="nav-icon" fx:id="hBoxDeskMe" alignment="CENTER" onMouseClicked="#hBoxDeskMeOnMouseClicked" prefHeight="70.0" prefWidth="68.0">
                <children>
                   <ImageView fitHeight="51.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../image/DeskMe_Icon.png" />
+                        <Image url="@../image/DeskMe_Icon_new.png" />
                      </image>
                   </ImageView>
                </children>
