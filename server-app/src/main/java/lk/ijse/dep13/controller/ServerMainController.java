@@ -57,6 +57,7 @@ public class ServerMainController {
     public void initialize() {
         lblConnection.setText("Server Need to Connect...");
         crlStatus.setStyle("-fx-fill: #0066ff");
+        btnEndSession.setDisable(true);
     }
 
     public void btnCreateSessionOnAction(ActionEvent actionEvent) {
@@ -103,6 +104,7 @@ public class ServerMainController {
                     Platform.runLater(() -> {
                         lblConnection.setText("Client connected from: " + clientAddress);
                         crlStatus.setStyle("-fx-fill:  green;");
+                        btnEndSession.setDisable(false);
                     });
 
                     Platform.runLater(() -> switchAlert(Alert.AlertType.INFORMATION, "Connected", null, "Client connected from " + clientAddress));
@@ -153,6 +155,7 @@ public class ServerMainController {
             Platform.runLater(() -> {
                lblConnection.setText("Client disconnected.");
                crlStatus.setStyle("-fx-fill: red;");
+               btnEndSession.setDisable(true);
             });
         }
     }
@@ -301,6 +304,7 @@ public class ServerMainController {
                 Platform.runLater(() -> {
                    lblConnection.setText("Connection Closed");
                    crlStatus.setStyle("-fx-text-fill: red");
+                   btnEndSession.setDisable(true);
                 });
             } catch (IOException e) {
                 System.out.println("Error closing local socket");
