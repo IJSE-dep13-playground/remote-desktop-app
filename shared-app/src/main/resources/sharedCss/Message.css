@@ -1,0 +1,56 @@
+*{
+    -fx-font-family: Montserrat;
+}
+
+.root {
+    -fx-background-color: linear-gradient(to bottom, #73aefa, #3059a4);
+    -fx-padding: 10px;
+    -fx-font-family: 'Arial', sans-serif;
+}
+
+/* Header Label */
+#lblH1 {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* Text Area Styling */
+#txtAreaChat {
+    -fx-control-inner-background: #ffffff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+}
+
+/* Text Input Styling */
+#txtInput {
+    -fx-control-inner-background: #f5f5f5;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px;
+}
+
+/* Send Button Styling */
+#btnSend {
+    -fx-background-color: linear-gradient(to bottom, #43a635, #337b14);
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-border-width: 2px;
+    -fx-background-radius: 15px;
+    -fx-cursor: hand;
+}
+
+#btnSend:hover {
+    -fx-background-color: linear-gradient(to bottom, #71e161, #57c229);
+}
+
+#btnSend:pressed {
+    -fx-background-color: #53f361;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.4), 10, 0.5, 0, 1);
+}
