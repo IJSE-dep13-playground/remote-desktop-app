@@ -14,6 +14,7 @@
 
 <AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
    <children>
+      <Line endX="455.0" layoutX="242.0" layoutY="529.0" startX="-128.0" AnchorPane.bottomAnchor="46.5" AnchorPane.leftAnchor="113.0" AnchorPane.rightAnchor="22.5" />
       <VBox fx:id="vBoxNavBar" alignment="TOP_CENTER" prefHeight="576.0" prefWidth="95.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox id="nav-icon" fx:id="hBoxVideo" alignment="CENTER" onMouseClicked="#hBoxVideoOnMouseClicked" prefHeight="65.0" prefWidth="60.0">
@@ -43,6 +44,15 @@
                   </ImageView>
                </children>
             </HBox>
+            <HBox id="nav-icon" fx:id="hBoxConnection" alignment="CENTER" layoutX="10.0" layoutY="265.0" onMouseClicked="#hBoxConnectionOnMouseClicked" prefHeight="65.0" prefWidth="60.0">
+               <children>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../image/connection_icon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
             <HBox id="nav-icon" fx:id="hBoxDeskme" alignment="CENTER" layoutX="10.0" layoutY="180.0" onMouseClicked="#hBoxDeskmeOnMouseClicked" prefHeight="65.0" prefWidth="60.0">
                <children>
                   <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
@@ -52,18 +62,8 @@
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" alignment="CENTER" layoutX="10.0" layoutY="265.0" prefHeight="65.0" prefWidth="60.0">
-               <children>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../image/settings_icon.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
          </children>
       </VBox>
-      <Line endX="455.0" layoutX="242.0" layoutY="529.0" startX="-128.0" AnchorPane.bottomAnchor="46.5" />
       <Label fx:id="lblConnection" layoutX="140.0" layoutY="544.0" text="Connection status" AnchorPane.bottomAnchor="13.0" />
       <Circle fx:id="crlStatus" fill="#18f532" layoutX="126.0" layoutY="553.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="17.0" />
       <Label fx:id="lblWelcome" layoutX="120.0" layoutY="22.0" text="Welcome to DeskMe" AnchorPane.topAnchor="22.0" />

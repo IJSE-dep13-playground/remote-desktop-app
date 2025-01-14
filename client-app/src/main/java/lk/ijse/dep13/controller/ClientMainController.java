@@ -4,6 +4,8 @@ import com.github.sarxos.webcam.Webcam;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,13 +22,16 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lk.ijse.dep13.sharedApp.controller.ConnectionController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
+import lk.ijse.dep13.util.AppRouter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Optional;
@@ -55,6 +60,8 @@ public class ClientMainController {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean sessionActive = false;
+    private long startTime;
+    private long endTime;
 
     public void initialize() throws IOException {
         btnAbortSession.setDisable(true);
@@ -66,6 +73,8 @@ public class ClientMainController {
         if (sessionActive) return;
         new Thread(() -> {
             try {
+                // get time before socket start
+                startTime = System.currentTimeMillis();
                 socket = new Socket("127.0.0.1", 9080);
                 videoSocket = new Socket("127.0.0.1", 9081);
                 audioSocket = new Socket("127.0.0.1", 9082);
@@ -122,6 +131,10 @@ public class ClientMainController {
     private void handleServerDisconnection() {
         Platform.runLater(() -> {
             sessionActive = false;
+
+            // socket closed time
+            endTime = System.currentTimeMillis();
+
             btnJoinSession.setDisable(false);
             btnAbortSession.setDisable(true);
             lblConnection.setText("Disconnected");
@@ -147,6 +160,10 @@ public class ClientMainController {
         new Thread(() -> {
             if (result.get() == ButtonType.OK) {
                 sessionActive = false;
+
+                // socket closed time
+                endTime = System.currentTimeMillis();
+
                 if (socket != null && !socket.isClosed()) {
                     try {
                         socket.close();
@@ -302,5 +319,17 @@ public class ClientMainController {
             Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.ABOUT).load());
             stage.setScene(scene);
             stage.show();
+    }
+
+    public void hBoxConnectionOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.centerOnScreen();
+        stage.resizableProperty().setValue(false);
+        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.CONNECTION).load());
+        stage.setScene(scene);
+        stage.show();
+        ConnectionController connectionController = ConnectionController.getInstance();
+        connectionController.connect("127.0.0.1",InetAddress.getLocalHost().getHostAddress(),"9090",startTime+"");
     }
 }

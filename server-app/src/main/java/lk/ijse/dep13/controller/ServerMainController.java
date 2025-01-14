@@ -46,6 +46,7 @@ public class ServerMainController {
     public Label lblConnection;
     public Circle crlStatus;
     public Button btnEndSession;
+    public HBox hBoxConnection;
 
     private ServerSocket serverSocket = null;
     private Socket localSocket = null;
@@ -323,5 +324,9 @@ public class ServerMainController {
         Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.ABOUT).load());
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void hBoxConnectionOnMouseClicked(MouseEvent mouseEvent) {
+
     }
 }
