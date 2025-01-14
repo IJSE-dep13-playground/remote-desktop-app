@@ -4,13 +4,8 @@ import com.github.sarxos.webcam.Webcam;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -26,7 +21,6 @@ import lk.ijse.dep13.sharedApp.controller.ConnectionController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
-import lk.ijse.dep13.util.AppRouter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -45,7 +39,6 @@ public class ClientMainController {
     public Circle crlConnectionStatus;
     public Label lblConnection;
     public Label lblWelcome;
-    public HBox hBoxSettings;
     public Button btnAbortSession;
     public Pane pnSession;
     public ImageView imgPreview;
@@ -53,8 +46,10 @@ public class ClientMainController {
     public Button btnJoinSession;
     public HBox hBoxFileSender;
     public ImageView imgVideo;
+    public TextField txtSessionId;
 
     private Socket socket;
+    private Socket imageSocket;
     private Socket videoSocket;
     private Socket audioSocket;
     private ObjectOutputStream oos;
@@ -69,30 +64,99 @@ public class ClientMainController {
         imgPreview.fitHeightProperty().bind(pnSession.heightProperty());
     }
 
+    private void checkSessionID() {
+        String sessionId = txtSessionId.getText().strip();
+        if (sessionId.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Empty Session ID", null, "Enter a session ID");
+            return;
+        }
+
+        new Thread(() -> {
+            try (Socket socket = new Socket("127.0.0.1", 9080);
+                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+
+                // Send the session ID to the server
+                writer.write(sessionId + "\n");
+                writer.flush();
+
+                // Read the response
+                String response = reader.readLine();
+
+                Platform.runLater(() -> {
+                    if ("VALID".equals(response)) {
+                        showAlert(Alert.AlertType.INFORMATION, "Session Valid", null, "You have entered a valid session ID.");
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Invalid Session ID", null, "The session ID you entered is invalid.");
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    showAlert(Alert.AlertType.ERROR, "Connection Issue", null, "Unable to connect to the server.");
+                });
+            }
+        }).start();
+    }
+
     public void btnJoinSessionOnAction(ActionEvent actionEvent) {
-        if (sessionActive) return;
+        if (txtSessionId.getText().isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Empty Session ID", null, "Enter a session ID");
+            return;
+        }
+
+        checkSessionID();
+
         new Thread(() -> {
             try {
-                // get time before socket start
-                startTime = System.currentTimeMillis();
-                socket = new Socket("127.0.0.1", 9080);
+                Thread.sleep(1000); // Set time for session validation
+                Platform.runLater(() -> {
+                    if (sessionActive) {
+                        showAlert(Alert.AlertType.INFORMATION, "Already Connected", null, "You are already connected.");
+                        return;
+                    }
+                    try {
+                        connectToSession();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void connectToSession() throws IOException {
+        if (sessionActive) return;
+
+        new Thread(() -> {
+            try {
+                socket = new Socket("127.0.0.1", 9090);
+                imageSocket = new Socket("127.0.0.1", 9090);
                 videoSocket = new Socket("127.0.0.1", 9081);
                 audioSocket = new Socket("127.0.0.1", 9082);
+
                 oos = new ObjectOutputStream(socket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+
                 sessionActive = true;
+
                 Platform.runLater(() -> {
                     btnAbortSession.setDisable(false);
                     btnJoinSession.setDisable(true);
                     lblConnection.setText("Connected");
                     crlConnectionStatus.setStyle("-fx-fill: green;");
                 });
+
                 // Start receiving and displaying images
                 startImageReceiver();
+
             } catch (IOException e) {
                 e.printStackTrace();
                 Platform.runLater(() -> {
-                    showAlert(Alert.AlertType.ERROR,null,"Connection Issue",null,"Your connection is failed to connect");
+                    showAlert(Alert.AlertType.ERROR, "Connection Issue", null, "Your connection is failed to connect");
                     lblConnection.setText("Connection Failed");
                     crlConnectionStatus.setStyle("-fx-fill: red;");
                 });
@@ -139,7 +203,7 @@ public class ClientMainController {
             btnAbortSession.setDisable(true);
             lblConnection.setText("Disconnected");
             crlConnectionStatus.setStyle("-fx-fill: red;");
-            showAlert(Alert.AlertType.INFORMATION, null, "Session Ended", null, "The server has ended the session.");
+            showAlert(Alert.AlertType.INFORMATION, "Session Ended", null, "The server has ended the session.");
         });
 
         try {
@@ -161,12 +225,10 @@ public class ClientMainController {
             if (result.get() == ButtonType.OK) {
                 sessionActive = false;
 
-                // socket closed time
-                endTime = System.currentTimeMillis();
-
                 if (socket != null && !socket.isClosed()) {
                     try {
                         socket.close();
+                        imageSocket.close();
                         videoSocket.close();
                         audioSocket.close();
                         Platform.runLater(() -> {
@@ -174,7 +236,7 @@ public class ClientMainController {
                             btnAbortSession.setDisable(true);
                             lblConnection.setText("Disconnected");
                             crlConnectionStatus.setStyle("-fx-fill: red;");
-                            showAlert(Alert.AlertType.INFORMATION,null,"Abort session",null,"Session aborted");
+                            showAlert(Alert.AlertType.INFORMATION,"Abort session",null,"Session aborted");
                         });
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -194,7 +256,7 @@ public class ClientMainController {
         stage.show();
     }
 
-    public void showAlert(Alert.AlertType alertType, String message, String title, String headerText, String contentText) {
+    public void showAlert(Alert.AlertType alertType, String title, String headerText, String contentText) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
