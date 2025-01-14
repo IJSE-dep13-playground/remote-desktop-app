@@ -88,9 +88,9 @@
             </Label>
          </children>
       </HBox>
+      <Button fx:id="btnEndSession" layoutX="596.0" layoutY="495.0" mnemonicParsing="false" onAction="#btnEndSessionOnAction" text="End Session" />
    </children>
    <stylesheets>
-      <URL value="@../sharedAppCSS/MainScene.css" />
       <URL value="@../css/MainScene.css" />
    </stylesheets>
 </AnchorPane>
