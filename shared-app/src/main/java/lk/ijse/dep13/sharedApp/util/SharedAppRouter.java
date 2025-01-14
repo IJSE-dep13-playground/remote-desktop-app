@@ -4,7 +4,7 @@ import javafx.fxml.FXMLLoader;
 
 public class SharedAppRouter {
     public enum Routes{
-        FILE_SENDER,VIDEO_CALL,ABOUT
+        FILE_SENDER,VIDEO_CALL,ABOUT, CONNECTION
     }
     public static FXMLLoader getContainer(Routes route){
         FXMLLoader fxmlLoader = null;
@@ -14,6 +14,8 @@ public class SharedAppRouter {
             fxmlLoader = new FXMLLoader(SharedAppRouter.class.getResource("/sharedScene/VideoCall.fxml"));
         } if (route == Routes.ABOUT){
             fxmlLoader = new FXMLLoader(SharedAppRouter.class.getResource("/sharedScene/About.fxml"));
+        } if (route == Routes.CONNECTION){
+            fxmlLoader = new FXMLLoader(SharedAppRouter.class.getResource("/sharedScene/Connection.fxml"));
         }
         return fxmlLoader;
     }
