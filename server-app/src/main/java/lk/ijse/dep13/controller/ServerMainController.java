@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,8 +24,6 @@ import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 import com.github.sarxos.webcam.Webcam;
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -32,6 +31,7 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Optional;
 
 public class ServerMainController {
 
@@ -45,11 +45,14 @@ public class ServerMainController {
     public HBox hBoxVideo;
     public Label lblConnection;
     public Circle crlStatus;
+    public Button btnEndSession;
 
     private ServerSocket serverSocket = null;
     private Socket localSocket = null;
     private ServerSocket videoServerSocket = null;
     private ServerSocket audioServerSocket = null;
+    private boolean sessionActive = false;
+
 
     public void initialize() {
         lblConnection.setText("Server Need to Connect...");
@@ -62,6 +65,7 @@ public class ServerMainController {
                 serverSocket = new ServerSocket(9080);
                 videoServerSocket = new ServerSocket(9081);
                 audioServerSocket = new ServerSocket(9082);
+                sessionActive = true;
                 Platform.runLater(() -> {
                     lblConnection.setText("Server started on port 9080. Waiting for connection...");
                     crlStatus.setStyle("-fx-fill: green");
@@ -70,6 +74,8 @@ public class ServerMainController {
             } catch (BindException e) {
                 try {
                     serverSocket = new ServerSocket(0);
+                    videoServerSocket = new ServerSocket(0);
+                    audioServerSocket = new ServerSocket(0);
                     int newPort = serverSocket.getLocalPort();
                     Platform.runLater(() -> {
                         lblConnection.setText("Port 9080 already in use. Server started on port " + newPort);
@@ -100,6 +106,7 @@ public class ServerMainController {
                     });
 
                     Platform.runLater(() -> switchAlert(Alert.AlertType.INFORMATION, "Connected", null, "Client connected from " + clientAddress));
+                    // Start writing displaying images
                     new Thread(() -> handleClient(localSocket)).start();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -128,12 +135,8 @@ public class ServerMainController {
 
                 oos.writeObject(imagesBytes);
                 oos.flush();
-
-                // Receive mouse coordinates
-                if (ois.available() > 0) {
-                    Point mousePoint = (Point) ois.readObject();
-                }
                 Thread.sleep(1000 / 30); // 30 FPS
+
                 } catch (SocketException e){
                     System.err.println("Client disconnected or socket closed " + e.getMessage());
                     break;
@@ -280,4 +283,32 @@ public class ServerMainController {
             e.printStackTrace();
         }
     }
+
+    public void btnEndSessionOnAction(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("End Session");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to end the session?");
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            sessionActive = false;
+            try{
+                localSocket.close();
+                videoServerSocket.close();
+                audioServerSocket.close();
+                serverSocket.close();
+                Platform.runLater(() -> {
+                   lblConnection.setText("Connection Closed");
+                   crlStatus.setStyle("-fx-text-fill: red");
+                });
+            } catch (IOException e) {
+                System.out.println("Error closing local socket");
+            }
+        } else if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+            sessionActive = false;
+            alert.close();
+        }
+    }
+
 }

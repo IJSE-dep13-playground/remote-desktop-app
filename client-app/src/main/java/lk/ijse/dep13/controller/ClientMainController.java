@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Optional;
 
 public class ClientMainController {
@@ -86,7 +87,6 @@ public class ClientMainController {
                     lblConnection.setText("Connection Failed");
                     crlConnectionStatus.setStyle("-fx-fill: red;");
                 });
-
             }
         }).start();
     }
@@ -110,17 +110,32 @@ public class ClientMainController {
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 } finally {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    handleServerDisconnection();
                 }
                 return null;
             }
         };
         imgPreview.imageProperty().bind(task.valueProperty());
         new Thread(task).start();
+    }
+
+    private void handleServerDisconnection() {
+        Platform.runLater(() -> {
+            sessionActive = false;
+            btnJoinSession.setDisable(false);
+            btnAbortSession.setDisable(true);
+            lblConnection.setText("Disconnected");
+            crlConnectionStatus.setStyle("-fx-fill: red;");
+            showAlert(Alert.AlertType.INFORMATION, null, "Session Ended", null, "The server has ended the session.");
+        });
+
+        try {
+            if (socket != null && !socket.isClosed()) socket.close();
+            if (videoSocket != null && !videoSocket.isClosed()) videoSocket.close();
+            if (audioSocket != null && !audioSocket.isClosed()) audioSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void btnAbortSessionOnAction(ActionEvent actionEvent) {
@@ -230,8 +245,17 @@ public class ClientMainController {
                     ObjectInputStream ois = new ObjectInputStream(bis);
 
                     while (!videoSocket.isClosed()) {
-                        byte[] bytes = (byte[]) ois.readObject();
-                        updateValue(new Image(new ByteArrayInputStream(bytes)));
+                        try{
+                            byte[] bytes = (byte[]) ois.readObject();
+                            updateValue(new Image(new ByteArrayInputStream(bytes)));
+                        } catch (EOFException | SocketException e) {
+                            System.out.println("Server has closed the connection");
+                            break;
+                        } catch (IOException | ClassNotFoundException e) {
+                            e.printStackTrace();
+                        } finally {
+                            handleServerDisconnection();
+                        }
                     }
                     return null;
                 }
