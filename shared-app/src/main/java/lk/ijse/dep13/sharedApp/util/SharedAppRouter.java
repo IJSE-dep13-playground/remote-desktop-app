@@ -6,6 +6,7 @@ public class SharedAppRouter {
     public enum Routes{
         FILE_SENDER,VIDEO_CALL,ABOUT, CONNECTION, MESSAGE
     }
+
     public static FXMLLoader getContainer(Routes route){
         FXMLLoader fxmlLoader = null;
         if (route == Routes.FILE_SENDER){

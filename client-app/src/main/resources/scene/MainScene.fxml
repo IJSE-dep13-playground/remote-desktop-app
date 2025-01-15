@@ -25,7 +25,7 @@
                   </ImageView>
                </children>
             </HBox>
-            <HBox id="nav-icon" fx:id="hBoxChat" alignment="CENTER" layoutX="20.0" layoutY="130.0" prefHeight="69.0" prefWidth="68.0">
+            <HBox id="nav-icon" fx:id="hBoxChat" alignment="CENTER" layoutX="20.0" layoutY="130.0" onMouseClicked="#hBoxChatOnMouseClicked" prefHeight="69.0" prefWidth="68.0">
                <children>
                   <ImageView fitHeight="45.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                      <image>
