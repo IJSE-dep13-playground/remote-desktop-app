@@ -3,6 +3,7 @@ package lk.ijse.dep13.controller;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
@@ -52,6 +54,7 @@ public class ServerMainController {
     private Socket localSocket = null;
     private ServerSocket videoServerSocket = null;
     private ServerSocket audioServerSocket = null;
+    private ServerSocket messageServerSocket = null;
     private boolean sessionActive = false;
 
 
@@ -67,6 +70,7 @@ public class ServerMainController {
                 serverSocket = new ServerSocket(9080);
                 videoServerSocket = new ServerSocket(9081);
                 audioServerSocket = new ServerSocket(9082);
+                messageServerSocket = new ServerSocket(9083);
                 sessionActive = true;
                 Platform.runLater(() -> {
                     lblConnection.setText("Server started on port 9080. Waiting for connection...");
@@ -78,6 +82,7 @@ public class ServerMainController {
                     serverSocket = new ServerSocket(0);
                     videoServerSocket = new ServerSocket(0);
                     audioServerSocket = new ServerSocket(0);
+                    messageServerSocket = new ServerSocket(0);
                     int newPort = serverSocket.getLocalPort();
                     Platform.runLater(() -> {
                         lblConnection.setText("Port 9080 already in use. Server started on port " + newPort);
@@ -328,5 +333,28 @@ public class ServerMainController {
 
     public void hBoxConnectionOnMouseClicked(MouseEvent mouseEvent) {
 
+    }
+
+    public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.MESSAGE);
+        Scene scene = new Scene(loader.load());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.show();
+
+        if (sessionActive){
+            try {
+                Socket messageSocket = messageServerSocket.accept();
+                System.out.println("Client connected!");
+
+                // Retrieve the controller from the same loader instance
+                MessageController controller = loader.getController();
+                controller.initialize(messageSocket);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

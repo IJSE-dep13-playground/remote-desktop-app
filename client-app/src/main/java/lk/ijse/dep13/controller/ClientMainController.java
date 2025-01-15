@@ -23,6 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lk.ijse.dep13.sharedApp.controller.ConnectionController;
+import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
@@ -32,6 +33,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Optional;
@@ -57,6 +59,7 @@ public class ClientMainController {
     private Socket socket;
     private Socket videoSocket;
     private Socket audioSocket;
+    private Socket messageSocket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean sessionActive = false;
@@ -78,6 +81,7 @@ public class ClientMainController {
                 socket = new Socket("127.0.0.1", 9080);
                 videoSocket = new Socket("127.0.0.1", 9081);
                 audioSocket = new Socket("127.0.0.1", 9082);
+                messageSocket = new Socket("127.0.0.1", 9083);
                 oos = new ObjectOutputStream(socket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
                 sessionActive = true;
@@ -331,5 +335,24 @@ public class ClientMainController {
         stage.show();
         ConnectionController connectionController = ConnectionController.getInstance();
         connectionController.connect("127.0.0.1",InetAddress.getLocalHost().getHostAddress(),"9090",startTime+"");
+    }
+
+    public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.MESSAGE);
+        Scene scene = new Scene(loader.load());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.show();
+
+        if (sessionActive){
+            try {
+                MessageController controller = loader.getController();
+                controller.initialize(messageSocket);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
