@@ -8,6 +8,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import lk.ijse.dep13.sharedApp.util.ChatAPI;
+import lk.ijse.dep13.sharedApp.util.chatApiImpl.ChatApiImpl_OOS;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -23,7 +24,7 @@ public class MessageController {
 
     public void initialize(Socket socket) {
         try {
-            this.chatAPI = new ChatAPI(socket);
+            this.chatAPI = new ChatApiImpl_OOS(socket);
 
             // Start a thread to listen for incoming messages
             new Thread(() -> {
