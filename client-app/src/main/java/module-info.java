@@ -4,4 +4,5 @@ open module client.app {
     requires javafx.fxml;
     requires java.desktop;
     requires webcam.capture;
+//    requires dto;
 }
