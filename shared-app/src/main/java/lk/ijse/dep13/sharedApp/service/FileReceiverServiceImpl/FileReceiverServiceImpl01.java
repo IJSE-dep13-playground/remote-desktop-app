@@ -19,7 +19,7 @@ public class FileReceiverServiceImpl01 implements FileReceiverService {
     }
 
     @Override
-    public void recieveFileFromServer(TextArea txtAreaRecievedFiles, Socket localSocket) throws IOException, ClassNotFoundException {
+    public void recieveFileFromClient(Socket localSocket) throws IOException, ClassNotFoundException {
 
             InputStream is = localSocket.getInputStream();
             ObjectInputStream ois=new ObjectInputStream(is);
@@ -44,8 +44,8 @@ public class FileReceiverServiceImpl01 implements FileReceiverService {
             }
             fos.flush();
             fos.close();
-            txtAreaRecievedFiles.setText("files copied succesfully");
-            fos.close();
+
+
         }
     }
 

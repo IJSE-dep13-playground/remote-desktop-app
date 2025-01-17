@@ -62,7 +62,6 @@
                   </ImageView>
                </children>
             </HBox>
-            <Button fx:id="btnFileReciever" mnemonicParsing="false" onAction="#btnFileRecieverOnAction" text="open file reciever" />
          </children>
       </VBox>
       <Label fx:id="lblConnection" layoutX="140.0" layoutY="544.0" text="Connection status" AnchorPane.bottomAnchor="13.0" />

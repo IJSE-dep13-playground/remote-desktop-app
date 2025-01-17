@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import lk.ijse.dep13.sharedApp.service.FileReceiverService;
+import lk.ijse.dep13.sharedApp.service.FileReceiverServiceImpl.FileReceiverServiceImpl01;
 import lk.ijse.dep13.sharedApp.service.FileSenderService;
 import lk.ijse.dep13.sharedApp.service.FileSenderServiceImpl.FileSenderService_OOS;
 
@@ -22,10 +24,14 @@ public class FileSenderController {
     public Label lblH2;
     public Label lblH1;
     public Button btnBrowse;
+    private Socket localSocket;
 
     public File file;
     private boolean isClient;  // flag to determine if it's client or server
-FileSenderService fileSenderService=new FileSenderService_OOS();
+
+    FileSenderService fileSenderService=new FileSenderService_OOS();
+   FileReceiverService fileReceiverService=new FileReceiverServiceImpl01();
+
     // Set whether this is a client or server instance
     public void setIsClient(boolean isClient) {
         this.isClient = isClient;
@@ -36,9 +42,9 @@ FileSenderService fileSenderService=new FileSenderService_OOS();
         }
     }
 
-    public void initialize() {
+    public void initialize(Socket socket) {
         btnSend.setDisable(true);
-        //Socket socket
+        this.localSocket=socket;
 
     }
 
@@ -54,31 +60,31 @@ FileSenderService fileSenderService=new FileSenderService_OOS();
     private void sendFileToServer() throws IOException {
        fileSenderService.sendFileToServer(file);
     }
-
-    private void receiveFileFromClient() throws IOException {
-        // Start a server socket to listen for client file transfer requests
-        try {
-            ServerSocket serverSocket = new ServerSocket(9898);
-            Socket socket = serverSocket.accept();  // Accept client connection
-
-            BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-            FileOutputStream fos = new FileOutputStream("received_file");
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = bis.read(buffer)) != -1) {
-                bos.write(buffer, 0, read);
-            }
-
-            System.out.println("File received successfully.");
-            bos.close();
-            bis.close();
-            socket.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+//
+//    private void receiveFileFromClient() throws IOException {
+//        // Start a server socket to listen for client file transfer requests
+//        try {
+//            ServerSocket serverSocket = new ServerSocket(9898);
+//            Socket socket = serverSocket.accept();  // Accept client connection
+//
+//            BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+//            FileOutputStream fos = new FileOutputStream("received_file");
+//            BufferedOutputStream bos = new BufferedOutputStream(fos);
+//
+//            byte[] buffer = new byte[1024];
+//            int read;
+//            while ((read = bis.read(buffer)) != -1) {
+//                bos.write(buffer, 0, read);
+//            }
+//
+//            System.out.println("File received successfully.");
+//            bos.close();
+//            bis.close();
+//            socket.close();
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
 
     public void btnBrowseOnAction(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
@@ -100,5 +106,10 @@ FileSenderService fileSenderService=new FileSenderService_OOS();
 
     public void btnRecieveOnAction(ActionEvent actionEvent) {
 
+            try {
+                fileReceiverService.recieveFileFromClient(localSocket);
+
+            }catch (Exception e){
+                e.printStackTrace();
     }
-}
+}}

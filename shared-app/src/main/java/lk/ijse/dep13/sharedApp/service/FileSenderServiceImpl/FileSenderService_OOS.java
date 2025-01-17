@@ -10,9 +10,9 @@ public class FileSenderService_OOS implements FileSenderService {
     @Override
     public void sendFileToServer(File file) throws IOException {
 
-        Socket socket = new Socket("127.0.0.1", 9898);
+        Socket socket = new Socket("127.0.0.1", 9084);
         OutputStream os = socket.getOutputStream();
-        //BufferedOutputStream bos = new BufferedOutputStream(os);
+
 
         // Send the file data
         FileInputStream fis = new FileInputStream(file);
