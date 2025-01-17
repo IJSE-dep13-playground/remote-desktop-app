@@ -6,4 +6,5 @@ open module shared.app {
     requires javafx.controls;
     requires java.desktop;
     requires jdk.compiler;
+    requires bridj;
 }
