@@ -5,5 +5,6 @@ import java.io.IOException;
 
 public interface FileSenderService {
     void sendFileToServer(File file) throws IOException;
-    public String getFileExtension(String fileName);
+    String getFileExtension(String fileName);
+    String getFileName(String fileName);
 }

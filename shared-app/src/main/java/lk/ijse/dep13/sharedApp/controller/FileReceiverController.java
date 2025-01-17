@@ -10,6 +10,9 @@ import lk.ijse.dep13.sharedApp.service.FileReceiverServiceImpl.FileReceiverServi
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileReceiverController {
 
@@ -63,9 +66,12 @@ public class FileReceiverController {
           ObjectInputStream ois=new ObjectInputStream(is);
             File file=(File) ois.readObject();
             String ext=(String)ois.readObject();
+            String fileName=(String)ois.readObject();
             //file.createNewFile();
 
-            File fileCopy=new File(System.getProperty("user.home"),"fileCopy"+"."+ext);
+            String separator = Paths.get("").getFileSystem().getSeparator();
+            File fileCopy=new File(System.getProperty("user.home"),"transferredFiles"+separator+fileName+"."+ext);
+          //  String path= Files.getPA
             //fileCopy.createNewFile();
 
            FileInputStream fis=new FileInputStream(file);

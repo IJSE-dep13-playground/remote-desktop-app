@@ -4,6 +4,7 @@ import lk.ijse.dep13.sharedApp.service.FileSenderService;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Paths;
 
 public class FileSenderService_OOS implements FileSenderService {
     @Override
@@ -20,6 +21,7 @@ public class FileSenderService_OOS implements FileSenderService {
         ObjectOutputStream oos=new ObjectOutputStream(os);
         oos.writeObject(file);
         oos.writeObject(getFileExtension(name));
+        oos.writeObject(getFileName(name));
         oos.flush();
         oos.close();
     }
@@ -32,5 +34,17 @@ public class FileSenderService_OOS implements FileSenderService {
         } else {
             return "";
         }
+    }
+
+    @Override
+    public String getFileName(String fileName) {
+
+        String separator = Paths.get("").getFileSystem().getSeparator();
+
+        String[] parts = fileName.split(separator);
+
+
+        String fileNameWithoutExtension = parts[parts.length - 1].split("\\.")[0];
+        return fileNameWithoutExtension;
     }
 }
