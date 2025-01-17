@@ -97,12 +97,5 @@ FileSenderService fileSenderService=new FileSenderService_OOS();
         }
     }
 
-    public String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf(".");
-        if (dotIndex > 0) {
-            return fileName.substring(dotIndex + 1);
-        } else {
-            return "";
-        }
-    }
+    
 }
