@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
+<AnchorPane fx:id="root" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ServerMainController">
    <children>
       <Line endX="455.0" layoutX="242.0" layoutY="529.0" startX="-128.0" AnchorPane.bottomAnchor="46.5" AnchorPane.leftAnchor="113.0" AnchorPane.rightAnchor="22.5" />
       <VBox fx:id="vBoxNavBar" alignment="TOP_CENTER" prefHeight="576.0" prefWidth="95.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -62,6 +62,7 @@
                   </ImageView>
                </children>
             </HBox>
+            <Button fx:id="btnFileReciever" mnemonicParsing="false" onAction="#btnFileRecieverOnAction" text="open file reciever" />
          </children>
       </VBox>
       <Label fx:id="lblConnection" layoutX="140.0" layoutY="544.0" text="Connection status" AnchorPane.bottomAnchor="13.0" />

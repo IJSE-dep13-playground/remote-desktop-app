@@ -35,18 +35,21 @@ public class FileSenderController {
 
     public void initialize() {
         btnSend.setDisable(true);
+        //Socket socket
+
     }
 
     public void btnSendOnAction(ActionEvent actionEvent) throws IOException {
-        if (isClient) {
-            sendFileToServer();
-        } else {
-            receiveFileFromClient();
-        }
+//        if (isClient) {
+//            sendFileToServer();
+//        } else {
+//            receiveFileFromClient();
+//        }
+        sendFileToServer();
     }
 
     private void sendFileToServer() throws IOException {
-        Socket socket = new Socket("127.0.0.1", 9080);
+        Socket socket = new Socket("127.0.0.1", 9898);
         OutputStream os = socket.getOutputStream();
         BufferedOutputStream bos = new BufferedOutputStream(os);
 
@@ -67,7 +70,7 @@ public class FileSenderController {
 
     private void receiveFileFromClient() throws IOException {
         // Start a server socket to listen for client file transfer requests
-        ServerSocket serverSocket = new ServerSocket(9080);
+       try{ ServerSocket serverSocket = new ServerSocket(9898);
         Socket socket = serverSocket.accept();  // Accept client connection
 
         BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
@@ -83,7 +86,9 @@ public class FileSenderController {
         System.out.println("File received successfully.");
         bos.close();
         bis.close();
-        socket.close();
+        socket.close();} catch (Exception e) {
+           System.out.println(e.getMessage());
+       }
     }
 
     public void btnBrowseOnAction(ActionEvent actionEvent) {
