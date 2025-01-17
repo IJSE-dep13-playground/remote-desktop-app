@@ -1,0 +1,36 @@
+package lk.ijse.dep13.sharedApp.service.FileSenderServiceImpl;
+
+import lk.ijse.dep13.sharedApp.service.FileSenderService;
+
+import java.io.*;
+import java.net.Socket;
+
+public class FileSenderService_OOS implements FileSenderService {
+    @Override
+    public void sendFileToServer(File file) throws IOException {
+
+        Socket socket = new Socket("127.0.0.1", 9898);
+        OutputStream os = socket.getOutputStream();
+        //BufferedOutputStream bos = new BufferedOutputStream(os);
+
+        // Send the file data
+        FileInputStream fis = new FileInputStream(file);
+        String name = file.getName();
+
+        ObjectOutputStream oos=new ObjectOutputStream(os);
+        oos.writeObject(file);
+        oos.writeObject(getFileExtension(name));
+        oos.flush();
+        oos.close();
+    }
+
+    @Override
+    public String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex > 0) {
+            return fileName.substring(dotIndex + 1);
+        } else {
+            return "";
+        }
+    }
+}

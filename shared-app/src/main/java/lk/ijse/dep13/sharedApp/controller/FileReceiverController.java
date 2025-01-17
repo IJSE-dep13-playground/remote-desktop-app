@@ -60,16 +60,25 @@ public class FileReceiverController {
     public void btnRecieveOnAction(ActionEvent actionEvent) {
         try {
             InputStream is = localSocket.getInputStream();
-            String homeDir = System.getProperty("user.home");
-            File file = new File(homeDir, "hy.jpg");
-            FileOutputStream fos = new FileOutputStream(file);
-            while (true) {
-                byte[] buffer = new byte[1024];
-                int read = is.read(buffer);
-                if (read == -1) break;
-                fos.write(buffer, 0, read);
-                fos.flush();
-            }
+          ObjectInputStream ois=new ObjectInputStream(is);
+            File file=(File) ois.readObject();
+            String ext=(String)ois.readObject();
+            //file.createNewFile();
+
+            File fileCopy=new File(System.getProperty("user.home"),"fileCopy"+"."+ext);
+            //fileCopy.createNewFile();
+
+           FileInputStream fis=new FileInputStream(file);
+           FileOutputStream fos=new FileOutputStream(fileCopy);
+           while(true){
+               byte[] buffer=new byte[1024];
+               int read=fis.read(buffer);
+               if(read==-1)break;
+               fos.write(buffer,0,read);
+              // fos.flush();
+           }
+           fos.flush();
+           fos.close();
             txtAreaRecievedFiles.setText("files copied succesfully");
             fos.close();
         } catch (Exception e) {

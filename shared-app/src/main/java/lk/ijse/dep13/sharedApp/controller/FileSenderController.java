@@ -7,10 +7,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import lk.ijse.dep13.sharedApp.service.FileSenderService;
+import lk.ijse.dep13.sharedApp.service.FileSenderServiceImpl.FileSenderService_OOS;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class FileSenderController {
     public AnchorPane root;
@@ -22,7 +25,7 @@ public class FileSenderController {
 
     public File file;
     private boolean isClient;  // flag to determine if it's client or server
-
+FileSenderService fileSenderService=new FileSenderService_OOS();
     // Set whether this is a client or server instance
     public void setIsClient(boolean isClient) {
         this.isClient = isClient;
@@ -49,46 +52,32 @@ public class FileSenderController {
     }
 
     private void sendFileToServer() throws IOException {
-        Socket socket = new Socket("127.0.0.1", 9898);
-        OutputStream os = socket.getOutputStream();
-        BufferedOutputStream bos = new BufferedOutputStream(os);
-
-        // Send the file data
-        FileInputStream fis = new FileInputStream(file);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        while (true) {
-            byte[] buffer = new byte[1024];
-            int read = bis.read(buffer);
-            if (read == -1) {
-                break;
-            }
-            bos.write(buffer, 0, read);
-        }
-        System.out.println(file.getName() + " File uploaded successfully.");
-        bis.close();
+       fileSenderService.sendFileToServer(file);
     }
 
     private void receiveFileFromClient() throws IOException {
         // Start a server socket to listen for client file transfer requests
-       try{ ServerSocket serverSocket = new ServerSocket(9898);
-        Socket socket = serverSocket.accept();  // Accept client connection
+        try {
+            ServerSocket serverSocket = new ServerSocket(9898);
+            Socket socket = serverSocket.accept();  // Accept client connection
 
-        BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-        FileOutputStream fos = new FileOutputStream("received_file");
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
+            BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+            FileOutputStream fos = new FileOutputStream("received_file");
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
 
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = bis.read(buffer)) != -1) {
-            bos.write(buffer, 0, read);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = bis.read(buffer)) != -1) {
+                bos.write(buffer, 0, read);
+            }
+
+            System.out.println("File received successfully.");
+            bos.close();
+            bis.close();
+            socket.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-
-        System.out.println("File received successfully.");
-        bos.close();
-        bis.close();
-        socket.close();} catch (Exception e) {
-           System.out.println(e.getMessage());
-       }
     }
 
     public void btnBrowseOnAction(ActionEvent actionEvent) {
@@ -105,6 +94,15 @@ public class FileSenderController {
             alert.setHeaderText(null);
             alert.setContentText("Please select a file");
             alert.showAndWait();
+        }
+    }
+
+    public String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex > 0) {
+            return fileName.substring(dotIndex + 1);
+        } else {
+            return "";
         }
     }
 }
