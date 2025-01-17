@@ -23,7 +23,7 @@ public class FileReceiverController {
     FileReceiverService fileReceiverService = new FileReceiverServiceImpl01();
 
     public void initialize() {
-//txtAreaRecievedFiles.setText("jhjjhh");
+
 
     }
 
@@ -62,31 +62,7 @@ public class FileReceiverController {
 
     public void btnRecieveOnAction(ActionEvent actionEvent) {
         try {
-            InputStream is = localSocket.getInputStream();
-          ObjectInputStream ois=new ObjectInputStream(is);
-            File file=(File) ois.readObject();
-            String ext=(String)ois.readObject();
-            String fileName=(String)ois.readObject();
-            //file.createNewFile();
-
-            String separator = Paths.get("").getFileSystem().getSeparator();
-            File fileCopy=new File(System.getProperty("user.home"),"transferredFiles"+separator+fileName+"."+ext);
-          //  String path= Files.getPA
-            //fileCopy.createNewFile();
-
-           FileInputStream fis=new FileInputStream(file);
-           FileOutputStream fos=new FileOutputStream(fileCopy);
-           while(true){
-               byte[] buffer=new byte[1024];
-               int read=fis.read(buffer);
-               if(read==-1)break;
-               fos.write(buffer,0,read);
-              // fos.flush();
-           }
-           fos.flush();
-           fos.close();
-            txtAreaRecievedFiles.setText("files copied succesfully");
-            fos.close();
+            fileReceiverService.recieveFileFromServer(txtAreaRecievedFiles,localSocket);
         } catch (Exception e) {
             e.printStackTrace();
         }

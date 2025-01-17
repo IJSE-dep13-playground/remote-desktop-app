@@ -98,4 +98,7 @@ FileSenderService fileSenderService=new FileSenderService_OOS();
     }
 
 
+    public void btnRecieveOnAction(ActionEvent actionEvent) {
+
+    }
 }
