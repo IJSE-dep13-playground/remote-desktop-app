@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -19,6 +20,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lk.ijse.dep13.sharedApp.controller.FileSenderController;
 import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
@@ -49,12 +51,14 @@ public class ServerMainController {
     public Circle crlStatus;
     public Button btnEndSession;
     public HBox hBoxConnection;
+    public TextArea txtAreaForTesting;
 
     private ServerSocket serverSocket = null;
     private Socket localSocket = null;
     private ServerSocket videoServerSocket = null;
     private ServerSocket audioServerSocket = null;
     private ServerSocket messageServerSocket = null;
+    private ServerSocket fileTransferServerSocket=null;
     private boolean sessionActive = false;
 
 
@@ -71,6 +75,7 @@ public class ServerMainController {
                 videoServerSocket = new ServerSocket(9081);
                 audioServerSocket = new ServerSocket(9082);
                 messageServerSocket = new ServerSocket(9083);
+                fileTransferServerSocket=new ServerSocket(9084);
                 sessionActive = true;
                 Platform.runLater(() -> {
                     lblConnection.setText("Server started on port 9080. Waiting for connection...");
@@ -174,11 +179,29 @@ public class ServerMainController {
     }
 
     public void hBoxFileSenderOnMouseClicked(MouseEvent mouseEvent) throws IOException{
+
         Stage stage = new Stage(StageStyle.UTILITY);
-        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER).load());
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER);
+
+        Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.show();
+        if (sessionActive){
+            try {
+
+                System.out.println("wating for the clinet");
+                Socket fileTransferSocket =fileTransferServerSocket.accept();
+                System.out.println("Client connected!");
+
+                // Retrieve the controller from the same loader instance
+                FileSenderController controller = loader.getController();
+                controller.initialize(fileTransferSocket);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) throws IOException {
@@ -359,11 +382,25 @@ public class ServerMainController {
     }
 
     public void btnFileRecieverOnAction(ActionEvent actionEvent) throws IOException {
-        Stage stage = new Stage(StageStyle.UTILITY);
+     Stage stage = new Stage(StageStyle.UTILITY);
         FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.FILERECIEVER);
         Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.show();
+        if (sessionActive){
+            try {
+                System.out.println("wating for the clinet");
+                Socket fileTransferSocket =fileTransferServerSocket.accept();
+                System.out.println("Client connected!");
+
+                // Retrieve the controller from the same loader instance
+                FileSenderController controller = loader.getController();
+                controller.initialize(fileTransferSocket);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

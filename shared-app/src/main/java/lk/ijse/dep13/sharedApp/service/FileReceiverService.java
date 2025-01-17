@@ -9,5 +9,5 @@ import java.net.Socket;
 
 public interface FileReceiverService {
     void initialize(ServerSocket serverSocket, Socket localSocket) throws IOException;
-    void recieveFileFromServer(TextArea textArea, Socket localSocket) throws IOException, ClassNotFoundException;
+    void recieveFileFromClient (Socket localSocket) throws IOException, ClassNotFoundException;
 }
