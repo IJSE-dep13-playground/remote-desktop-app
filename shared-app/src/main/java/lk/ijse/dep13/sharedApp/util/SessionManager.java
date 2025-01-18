@@ -3,11 +3,12 @@ package lk.ijse.dep13.sharedApp.util;
 import javafx.scene.control.Alert;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SessionManager {
 
-    public static final ArrayList<String> sessionIDs = new ArrayList<>();
-    public static boolean validConnection = false;
+    private static final Set<String> sessionIDs = new HashSet<>();
 
     // Server Invoke this method
     public static String generateSessionID() {
@@ -29,15 +30,7 @@ public class SessionManager {
 
     // Client Invoke this method
     public static boolean validateSessionID(String sessionID) {
-        System.out.println("Session IDs: " + sessionIDs);
-        System.out.println("Session ID to validate: " + sessionID);
-        if (sessionIDs.contains(sessionID)){
-            validConnection = true;
-            return true;
-        } else {
-            validConnection = false;
-            return false;
-        }
+       return sessionIDs.contains(sessionID);
     }
 
     // Server Invoke this method after validation completed
@@ -45,4 +38,8 @@ public class SessionManager {
         sessionIDs.remove(sessionID);
     }
 
+    public static void main(String[] args) {
+        String sessionID = generateSessionID();
+        System.out.println("Session ID: " + sessionID);
+    }
 }

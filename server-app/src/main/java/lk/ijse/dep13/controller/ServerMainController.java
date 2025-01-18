@@ -52,26 +52,24 @@ public class ServerMainController {
     public HBox hBoxConnection;
 
     private ServerSocket serverSocket = null;
+    private ServerSocket screenServerSocket = null;
     private Socket localSocket = null;
     private ServerSocket videoServerSocket = null;
     private ServerSocket audioServerSocket = null;
     private ServerSocket messageServerSocket = null;
+    private Socket screenSocket = null;
     private boolean sessionActive = false;
 
 
     public void initialize() {
-        updateServerStatus("Server Need to Connect...","#0066ff");
+        updateServerStatus("Create a Session to connect...","#0066ff");
         btnEndSession.setDisable(true);
     }
 
     public void btnCreateSessionOnAction(ActionEvent actionEvent) {
         new Thread(() -> {
             if (initializeServerSockets()){
-                System.out.println(SessionManager.generateSessionID());
-                Platform.runLater(() -> {
-                    SessionManager.createSessionIDAlert();
-                });
-                if(SessionManager.validConnection) listenForClient();
+               listenForClient();
             }
         }).start();
     }
@@ -82,8 +80,13 @@ public class ServerMainController {
             videoServerSocket = new ServerSocket(9081);
             audioServerSocket = new ServerSocket(9082);
             messageServerSocket = new ServerSocket(9083);
+            screenServerSocket = new ServerSocket(9084);
             sessionActive = true;
-            Platform.runLater(() -> updateServerStatus("Server started on port 9080. Waiting for connection...","green"));
+            Platform.runLater(() -> {
+                btnCreateSession.setDisable(true);
+                btnEndSession.setDisable(false);
+                updateServerStatus("Server started on port 9080. Waiting for connection..." + SessionManager.generateSessionID(), "green");
+            });
             return true;
         } catch (BindException e) {
             // handle of port conflicts
@@ -100,9 +103,14 @@ public class ServerMainController {
             videoServerSocket = new ServerSocket(0);
             audioServerSocket = new ServerSocket(0);
             messageServerSocket = new ServerSocket(0);
+            screenServerSocket = new ServerSocket(0);
             int newPort = serverSocket.getLocalPort();
-            Platform.runLater(() -> updateServerStatus("Port 9080 already in use. Server started on port " + newPort,"orange"));
+            Platform.runLater(() -> {
+                    updateServerStatus("Port 9080 already in use. Server started on port " + newPort,"orange");
+                    btnCreateSession.setDisable(true);
+                    btnEndSession.setDisable(false);
             System.out.println("Server started on port " + newPort);
+            });
             return true;
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -111,33 +119,57 @@ public class ServerMainController {
         }
     }
 
-    private void validateClientID(){
-
-    }
-
     private void listenForClient(){
-        while (!serverSocket.isClosed()) {
-            try{
-                localSocket = serverSocket.accept();
-                String clientAddress = localSocket.getInetAddress().getHostAddress();
-                Platform.runLater(() -> {
-                    updateServerStatus("Client connected from: " + clientAddress,"green");
-                    switchAlert(Alert.AlertType.INFORMATION, "Connected", null, "Client connected from " + clientAddress);
-                    btnEndSession.setDisable(false);
-                });
+            try {
+                while (!serverSocket.isClosed()) {
+                    localSocket = serverSocket.accept();
+                    String clientAddress = localSocket.getInetAddress().getHostAddress();
+                    Platform.runLater(() -> {
+                        btnEndSession.setDisable(false);
+                    });
 
-                // Start writing displaying images
-                new Thread(() -> shareScreen(localSocket)).start();
-            } catch (IOException e) {
+                    // check session ID
+                    handleClient(localSocket);
+                }
+            } catch(IOException e){
                 Platform.runLater(() -> {
-                    switchAlert(Alert.AlertType.INFORMATION,"Session stopped",null,"Session has been stopped");
-                    updateServerStatus("Connection lost.","red");
+                    switchAlert(Alert.AlertType.INFORMATION, "Session stopped", null, "Session has been stopped");
+                    updateServerStatus("Connection lost.", "red");
                 });
             }
-        }
     }
 
-    private void shareScreen(Socket clientSocket) {
+    private void handleClient(Socket localSocket){
+        new Thread(() -> {
+            try(
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(localSocket.getOutputStream()));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
+            ) {
+                // Validate Session ID
+                String sessionID = br.readLine();
+                if (SessionManager.validateSessionID(sessionID)) {
+                    bw.write("VALID\n");
+                    bw.flush();
+                    System.out.println("Session ID validated: " + sessionID);
+
+                    // Start writing displaying images
+                    screenSocket = screenServerSocket.accept();
+                    shareScreen(screenSocket);
+                    SessionManager.removeSessionID(sessionID);
+                    localSocket.close();
+                } else {
+                    bw.write("INVALID\n");
+                    bw.flush();
+                    System.out.println("Session ID invalid: " + sessionID);
+                    localSocket.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    private void shareScreen(Socket clientSocket) throws IOException {
         try (
                 ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
         ) {
@@ -155,7 +187,25 @@ public class ServerMainController {
                 }
             } catch(Exception e) {
             System.out.println("Error while sharing screen");
+            Platform.runLater(()-> switchAlert(Alert.AlertType.ERROR, "Disconnected",null, " Client Disconnected from " + clientSocket.getInetAddress().getHostAddress()));
+            cleanUpServerSockets();
         }
+    }
+
+    private void cleanUpServerSockets() {
+        closeSocket(localSocket, "localSocket");
+        closeSocket(screenSocket, "screenSocket");
+        closeSocket(serverSocket, "serverSocket");
+        closeSocket(screenServerSocket, "screenServerSocket");
+        closeSocket(audioServerSocket, "audioServerSocket");
+        closeSocket(videoServerSocket, "videoServerSocket");
+        closeSocket(messageServerSocket, "messageServerSocket");
+
+        // Reset UI buttons
+        Platform.runLater(() -> {
+            btnEndSession.setDisable(true);
+            btnCreateSession.setDisable(false);
+        });
     }
 
     private void updateServerStatus(String status, String color) {
@@ -300,21 +350,33 @@ public class ServerMainController {
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
             sessionActive = false;
-            try{
-                localSocket.close();
-                videoServerSocket.close();
-                audioServerSocket.close();
-                serverSocket.close();
-                Platform.runLater(() -> {
-                    updateServerStatus("Connection Closed","red");
-                    btnEndSession.setDisable(true);
-                });
-            } catch (IOException e) {
-                System.out.println("Error closing local socket");
-            }
+
+            // Close all sockets safely using the helper method
+            closeSocket(localSocket, "localSocket");
+            closeSocket(screenSocket, "screenSocket");
+            closeSocket(serverSocket, "serverSocket");
+            closeSocket(screenServerSocket, "screenServerSocket");
+            closeSocket(audioServerSocket, "audioServerSocket");
+            closeSocket(videoServerSocket, "videoServerSocket");
+            closeSocket(messageServerSocket, "messageServerSocket");
+
+            Platform.runLater(() -> {
+                updateServerStatus("Connection Closed", "red");
+                btnEndSession.setDisable(true);
+                btnCreateSession.setDisable(false);
+            });
         } else if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-            sessionActive = false;
             alert.close();
+        }
+    }
+
+    private void closeSocket(Closeable socket, String socketName) {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.out.println("Error closing " + socketName + ": " + e.getMessage());
+            }
         }
     }
 
