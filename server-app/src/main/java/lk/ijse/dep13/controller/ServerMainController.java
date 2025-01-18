@@ -381,6 +381,7 @@ public class ServerMainController {
             closeSocket(audioServerSocket, "audioServerSocket");
             closeSocket(videoServerSocket, "videoServerSocket");
             closeSocket(messageServerSocket, "messageServerSocket");
+            closeSocket(fileTransferServerSocket, "fileTransferServerSocket");
 
             Platform.runLater(() -> {
                 updateServerStatus("Connection Closed", "red");
