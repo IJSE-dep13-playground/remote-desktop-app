@@ -2,6 +2,45 @@
     -fx-font-family: Poppins;
 }
 
+#lblServerIP{
+    -fx-font-family: Poppins;
+    -fx-font-size: 14px;
+    -fx-text-fill: #226bea;;
+    -fx-font-weight: bold;
+}
+
+#txtServerIP{
+    -fx-background-radius: 15px;
+    -fx-border-color: #226bea;
+    -fx-border-radius: 15px;
+    -fx-text-fill: #272727;
+    -fx-font-family: Montserrat;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.5, 0, 2);
+}
+
+#txtServerIP:hover{
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.2, 0, 2);
+}
+
+#lblSessionID{
+    -fx-font-family: Poppins;
+    -fx-font-size: 14px;
+    -fx-text-fill: #00b30f;;
+    -fx-font-weight: bold;
+}
+#txtSessionID{
+    -fx-background-radius: 15px;
+    -fx-border-color: #00b30f;
+    -fx-border-radius: 15px;
+    -fx-text-fill: #272727;
+    -fx-font-family: Montserrat;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.5, 0, 2);
+}
+
+#txtSessionID:hover{
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.2, 0, 2);
+}
+
 #vBoxNavBar{
     -fx-background-color: linear-gradient(to bottom, #007bff, #0056b3);
     -fx-padding: 10;

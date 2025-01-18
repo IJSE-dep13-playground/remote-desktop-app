@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../clientAppCSS/MainScene.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.controller.ClientMainController">
    <children>
@@ -70,17 +71,31 @@
             <Circle fx:id="crlConnectionStatus" fill="#22eb5b" layoutX="23.0" layoutY="698.0" radius="5.0" stroke="#eeeeee" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="17.0" />
             <Pane fx:id="pnSession" layoutX="18.0" layoutY="92.0" prefHeight="583.0" prefWidth="1160.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="92.0">
                <children>
-                  <ImageView fx:id="imgPreview" fitHeight="583.0" fitWidth="1100.0" pickOnBounds="true" preserveRatio="true" />
-                  <ImageView fx:id="imgVideo" fitHeight="150.0" fitWidth="200.0" layoutX="277.0" layoutY="-75.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="imgPreview" fitHeight="583.0" fitWidth="1160.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
             <HBox alignment="CENTER" layoutX="598.0" layoutY="14.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
                <children>
-                  <TextField fx:id="txtSessionID" alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Session ID" />
+                  <VBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <TextField fx:id="txtServerIP" alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Server IP" />
+                        <TextField fx:id="txtSessionID" alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Session ID" />
+                     </children>
+                  </VBox>
                   <Button fx:id="btnJoinSession" mnemonicParsing="false" onAction="#btnJoinSessionOnAction" prefHeight="41.0" prefWidth="171.0" text="Join a Session" />
                   <Button fx:id="btnAbortSession" mnemonicParsing="false" onAction="#btnAbortSessionOnAction" prefHeight="41.0" prefWidth="171.0" text="Abort the Session" />
                </children>
             </HBox>
+            <Label fx:id="lblSessionID" layoutX="501.0" layoutY="53.0" text="Session ID :">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblServerIP" layoutX="512.0" layoutY="17.0" text="Server IP :">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </children>
