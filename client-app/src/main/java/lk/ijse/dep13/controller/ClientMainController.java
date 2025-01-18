@@ -153,7 +153,7 @@ public class ClientMainController {
                     btnAbortSession.setDisable(false);
                     btnJoinSession.setDisable(true);
                     txtSessionID.clear();
-                    updateServerStatus("Connected with Server", "#green");
+                    updateServerStatus("Connected with Server", "green");
                 });
                 // Start receiving and displaying images
                 startImageReceiver();
