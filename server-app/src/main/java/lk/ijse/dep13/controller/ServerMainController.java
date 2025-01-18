@@ -440,27 +440,4 @@ public class ServerMainController {
             }
         }
     }
-
-    public void btnFileRecieverOnAction(ActionEvent actionEvent) throws IOException {
-     Stage stage = new Stage(StageStyle.UTILITY);
-        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.FILERECIEVER);
-        Scene scene = new Scene(loader.load());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.show();
-        if (sessionActive){
-            try {
-                System.out.println("wating for the clinet");
-                Socket fileTransferSocket =fileTransferServerSocket.accept();
-                System.out.println("Client connected!");
-
-                // Retrieve the controller from the same loader instance
-                FileSenderController controller = loader.getController();
-                controller.initialize(fileTransferSocket);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }
