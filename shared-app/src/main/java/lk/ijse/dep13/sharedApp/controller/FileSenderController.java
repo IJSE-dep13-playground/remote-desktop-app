@@ -24,6 +24,7 @@ public class FileSenderController {
     public Label lblH2;
     public Label lblH1;
     public Button btnBrowse;
+    public TextField txtSavedLocation;
     private Socket fileTransferSocket;
 
     public File file;
@@ -107,7 +108,7 @@ public class FileSenderController {
     public void btnRecieveOnAction(ActionEvent actionEvent) {
 
             try {
-                fileReceiverService.recieveFileFromClient(fileTransferSocket);
+                fileReceiverService.recieveFileFromClient(fileTransferSocket,txtSavedLocation);
 
             }catch (Exception e){
                 e.printStackTrace();

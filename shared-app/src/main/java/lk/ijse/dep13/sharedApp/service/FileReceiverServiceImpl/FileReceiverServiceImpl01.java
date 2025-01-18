@@ -2,6 +2,7 @@ package lk.ijse.dep13.sharedApp.service.FileReceiverServiceImpl;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import lk.ijse.dep13.sharedApp.service.FileReceiverService;
 
 
@@ -14,7 +15,7 @@ public class FileReceiverServiceImpl01 implements FileReceiverService {
 
 
     @Override
-    public void recieveFileFromClient(Socket fileTransferSocket) throws IOException, ClassNotFoundException {
+    public void recieveFileFromClient(Socket fileTransferSocket, TextField downloadLocation) throws IOException, ClassNotFoundException {
 
             InputStream is = fileTransferSocket.getInputStream();
             ObjectInputStream ois=new ObjectInputStream(is);
@@ -25,6 +26,7 @@ public class FileReceiverServiceImpl01 implements FileReceiverService {
 
             String separator = Paths.get("").getFileSystem().getSeparator();
             File fileCopy=new File(System.getProperty("user.home"),"transferredFiles"+separator+fileName+"."+ext);
+            downloadLocation.setText(fileCopy.getAbsolutePath());
             //  String path= Files.getPA
             //fileCopy.createNewFile();
 
