@@ -1,10 +1,6 @@
-package lk.ijse.dep13.sharedApp.util;
-
-import com.sun.source.tree.TryTree;
-import lk.ijse.dep13.sharedApp.util.dto.Message;
+package lk.ijse.dep13.sharedApp.service;
 
 import java.io.*;
-import java.net.Socket;
 
 public interface ChatAPI {
 //    private Socket socket;

@@ -23,6 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lk.ijse.dep13.sharedApp.controller.ConnectionController;
+import lk.ijse.dep13.sharedApp.controller.FileSenderController;
 import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
@@ -60,6 +61,7 @@ public class ClientMainController {
     private Socket videoSocket;
     private Socket audioSocket;
     private Socket messageSocket;
+    private Socket fileTransferSocker;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean sessionActive = false;
@@ -82,6 +84,8 @@ public class ClientMainController {
                 videoSocket = new Socket("127.0.0.1", 9081);
                 audioSocket = new Socket("127.0.0.1", 9082);
                 messageSocket = new Socket("127.0.0.1", 9083);
+                fileTransferSocker=new Socket("127.0.0.1",9084);
+
                 oos = new ObjectOutputStream(socket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
                 sessionActive = true;
@@ -192,10 +196,17 @@ public class ClientMainController {
 
     public void hBoxFileSenderOnMouseClicked(MouseEvent mouseEvent) throws IOException {
         Stage stage = new Stage(StageStyle.UTILITY);
-        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER).load());
+        FXMLLoader loader=SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER);
+        Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.show();
+        if(sessionActive){
+            FileSenderController fileSenderController=loader.getController();
+            fileSenderController.initialize(fileTransferSocker);
+        }
+
+
     }
 
     public void showAlert(Alert.AlertType alertType, String message, String title, String headerText, String contentText) {
