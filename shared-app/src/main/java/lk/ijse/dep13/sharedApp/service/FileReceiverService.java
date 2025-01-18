@@ -8,6 +8,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public interface FileReceiverService {
-    void initialize(ServerSocket serverSocket, Socket localSocket) throws IOException;
+
     void recieveFileFromClient (Socket localSocket) throws IOException, ClassNotFoundException;
 }

@@ -7,8 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import lk.ijse.dep13.sharedApp.util.ChatAPI;
-import lk.ijse.dep13.sharedApp.util.chatApiImpl.ChatApiImpl_OOS;
+import lk.ijse.dep13.sharedApp.service.ChatAPI;
+import lk.ijse.dep13.sharedApp.service.chatApiImpl.ChatApiImpl_OOS;
 
 import java.io.IOException;
 import java.net.Socket;

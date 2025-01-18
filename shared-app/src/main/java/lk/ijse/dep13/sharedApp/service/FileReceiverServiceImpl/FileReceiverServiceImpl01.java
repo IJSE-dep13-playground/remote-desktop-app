@@ -11,12 +11,7 @@ import java.net.Socket;
 import java.nio.file.Paths;
 
 public class FileReceiverServiceImpl01 implements FileReceiverService {
-    @Override
-    public void initialize(ServerSocket serverSocket, Socket localSocket) throws IOException {
-        serverSocket=new ServerSocket(9080);
-       localSocket=serverSocket.accept();
 
-    }
 
     @Override
     public void recieveFileFromClient(Socket localSocket) throws IOException, ClassNotFoundException {

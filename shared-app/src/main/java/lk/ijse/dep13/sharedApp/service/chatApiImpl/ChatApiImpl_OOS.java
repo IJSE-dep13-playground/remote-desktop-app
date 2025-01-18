@@ -1,6 +1,6 @@
-package lk.ijse.dep13.sharedApp.util.chatApiImpl;
+package lk.ijse.dep13.sharedApp.service.chatApiImpl;
 
-import lk.ijse.dep13.sharedApp.util.ChatAPI;
+import lk.ijse.dep13.sharedApp.service.ChatAPI;
 import lk.ijse.dep13.sharedApp.util.dto.Message;
 
 import java.io.IOException;
