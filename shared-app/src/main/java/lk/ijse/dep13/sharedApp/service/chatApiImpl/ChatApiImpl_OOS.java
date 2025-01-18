@@ -13,20 +13,16 @@ public class ChatApiImpl_OOS implements ChatAPI {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
-
     public ChatApiImpl_OOS(Socket socket) throws IOException {
         this.socket = socket;
         this.oos = new ObjectOutputStream(socket.getOutputStream());
         this.ois = new ObjectInputStream(socket.getInputStream());
-
     }
 
     public void sendMessage(String message) throws IOException {
         Message reply = new Message(message);
-
         oos.writeObject(reply);
         oos.flush();
-
     }
 
     public String receiveMessage() throws IOException {

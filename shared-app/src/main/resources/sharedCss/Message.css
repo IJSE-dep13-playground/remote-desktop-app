@@ -17,7 +17,7 @@
 
 /* Text Area Styling */
 #txtAreaChat {
-    -fx-control-inner-background: #ffffff;
+    -fx-background-color: linear-gradient(to bottom, #efefef, #dadada);
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;

@@ -228,7 +228,6 @@ public class ServerMainController {
     }
 
     public void hBoxFileSenderOnMouseClicked(MouseEvent mouseEvent) throws IOException{
-
         Stage stage = new Stage(StageStyle.UTILITY);
         FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER);
         Scene scene = new Scene(loader.load());
@@ -253,87 +252,44 @@ public class ServerMainController {
 
     public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) throws IOException {
         Stage stage = new Stage(StageStyle.UTILITY);
-        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.VIDEO_CALL).load());
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.VIDEO_CALL);
+        Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.show();
 
-        // Access the shared controller
-        VideoCallController videoCallController = VideoCallController.getInstance();
-
-        new Thread(() -> {
-            try {
-                sendVideoStream(videoServerSocket.accept());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-        new Thread(() -> {
-            try {
-                receiveVideoStream(videoServerSocket.accept(), videoCallController.imgVideoPreview);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-        // Add audio streaming functionality
-        new Thread(() -> {
-            try {
-                Socket audioSocket = audioServerSocket.accept();
-                startAudioStreaming(audioSocket);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-    }
-
-    private void sendVideoStream(Socket videoSocket) throws IOException {
-        try{
-            Webcam webcam = Webcam.getDefault();
-            webcam.open();
-            try {
-                OutputStream os = videoSocket.getOutputStream();
-                BufferedOutputStream bos = new BufferedOutputStream(os);
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
-
-                while (!videoSocket.isClosed()) {
-                    BufferedImage bufferedImage = webcam.getImage();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage,"jpeg",baos);
-
-                    System.out.println("Sending frame of size: " + baos.toByteArray());
-                    oos.writeObject(baos.toByteArray());
-                    oos.flush();
-                    Thread.sleep(1000/30);
-                }
+        if (sessionActive){
+            try{
+                Socket videoSocket = videoServerSocket.accept();
+                VideoCallController controller = loader.getController();
+                controller.initialize(videoSocket);
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                System.out.println("Video call disconnected");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    private void receiveVideoStream(Socket videoSocket, ImageView imgVideoPreview) throws IOException {
-            Task<Image> task = new Task<>() {
-                @Override
-                protected Image call() throws Exception {
-                    InputStream is = videoSocket.getInputStream();
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    ObjectInputStream ois = new ObjectInputStream(bis);
+    public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.MESSAGE);
+        Scene scene = new Scene(loader.load());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.show();
 
-                    while (!videoSocket.isClosed()) {
-                        byte[] bytes = (byte[]) ois.readObject();
-                        updateValue(new Image(new ByteArrayInputStream(bytes)));
-                    }
-                    return null;
-                }
-            };
-            Platform.runLater(() -> {
-                imgVideoPreview.imageProperty().bind(task.valueProperty());
-            });
-            new Thread(task).start();
+        if (sessionActive){
+            try {
+                Socket messageSocket = messageServerSocket.accept();
+                System.out.println("Client connected!");
+
+                // Retrieve the controller from the same loader instance
+                MessageController controller = loader.getController();
+                controller.initialize(messageSocket);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void startAudioStreaming(Socket audioSocket) {
@@ -416,28 +372,5 @@ public class ServerMainController {
 
     public void hBoxConnectionOnMouseClicked(MouseEvent mouseEvent) {
 
-    }
-
-    public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
-        Stage stage = new Stage(StageStyle.UTILITY);
-        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.MESSAGE);
-        Scene scene = new Scene(loader.load());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.show();
-
-        if (sessionActive){
-            try {
-                Socket messageSocket = messageServerSocket.accept();
-                System.out.println("Client connected!");
-
-                // Retrieve the controller from the same loader instance
-                MessageController controller = loader.getController();
-                controller.initialize(messageSocket);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
