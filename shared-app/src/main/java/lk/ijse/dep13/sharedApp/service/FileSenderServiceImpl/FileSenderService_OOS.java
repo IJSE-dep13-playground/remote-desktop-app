@@ -23,7 +23,7 @@ public class FileSenderService_OOS implements FileSenderService {
         oos.writeObject(getFileExtension(name));
         oos.writeObject(getFileName(name));
         oos.flush();
-        oos.close();
+        //oos.close();
     }
 
     @Override
