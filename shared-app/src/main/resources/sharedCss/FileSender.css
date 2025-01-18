@@ -10,12 +10,29 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
     -fx-transition: 0.3s ease-in-out;
 }
+
+#btnRecieve{
+    -fx-background-color: linear-gradient(to bottom, #05ea07, #049306);
+    -fx-background-radius: 20px;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+    -fx-transition: 0.3s ease-in-out;
+}
 #btnSend:hover{
     -fx-background-color: linear-gradient(to bottom, #4c8af4, #226bea);
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
+
+#btnRecieve:hover{
+    -fx-background-color: linear-gradient(to bottom, #4c8af4, #226bea);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
 
 #btnBrowse{
     -fx-background-color: linear-gradient(to bottom, #f17f2d, #ea5e22);

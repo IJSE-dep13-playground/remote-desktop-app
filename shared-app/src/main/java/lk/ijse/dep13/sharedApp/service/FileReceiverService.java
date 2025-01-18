@@ -1,11 +1,14 @@
 package lk.ijse.dep13.sharedApp.service;
 
-import java.awt.*;
+
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public interface FileReceiverService {
-    void initialize(ServerSocket serverSocket, Socket localSocket) throws IOException;
-    void recieveFileFromServer() throws IOException;
+
+    void recieveFileFromClient (Socket localSocket, TextField downloadLocation) throws IOException, ClassNotFoundException;
 }
