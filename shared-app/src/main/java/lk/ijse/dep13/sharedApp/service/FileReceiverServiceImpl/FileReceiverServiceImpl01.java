@@ -14,9 +14,9 @@ public class FileReceiverServiceImpl01 implements FileReceiverService {
 
 
     @Override
-    public void recieveFileFromClient(Socket localSocket) throws IOException, ClassNotFoundException {
+    public void recieveFileFromClient(Socket fileTransferSocket) throws IOException, ClassNotFoundException {
 
-            InputStream is = localSocket.getInputStream();
+            InputStream is = fileTransferSocket.getInputStream();
             ObjectInputStream ois=new ObjectInputStream(is);
             File file=(File) ois.readObject();
             String ext=(String)ois.readObject();

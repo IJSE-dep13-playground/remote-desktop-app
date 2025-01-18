@@ -8,10 +8,10 @@ import java.nio.file.Paths;
 
 public class FileSenderService_OOS implements FileSenderService {
     @Override
-    public void sendFileToServer(File file) throws IOException {
+    public void sendFileToServer(File file,Socket fileTransferSocket) throws IOException {
 
-        Socket socket = new Socket("127.0.0.1", 9084);
-        OutputStream os = socket.getOutputStream();
+
+        OutputStream os = fileTransferSocket.getOutputStream();
 
 
         // Send the file data

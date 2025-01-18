@@ -24,7 +24,7 @@ public class FileSenderController {
     public Label lblH2;
     public Label lblH1;
     public Button btnBrowse;
-    private Socket localSocket;
+    private Socket fileTransferSocket;
 
     public File file;
     private boolean isClient;  // flag to determine if it's client or server
@@ -44,7 +44,7 @@ public class FileSenderController {
 
     public void initialize(Socket socket) {
         btnSend.setDisable(true);
-        this.localSocket=socket;
+        this.fileTransferSocket=socket;
 
     }
 
@@ -58,7 +58,7 @@ public class FileSenderController {
     }
 
     private void sendFileToServer() throws IOException {
-       fileSenderService.sendFileToServer(file);
+       fileSenderService.sendFileToServer(file,fileTransferSocket);
     }
 //
 //    private void receiveFileFromClient() throws IOException {
@@ -107,7 +107,7 @@ public class FileSenderController {
     public void btnRecieveOnAction(ActionEvent actionEvent) {
 
             try {
-                fileReceiverService.recieveFileFromClient(localSocket);
+                fileReceiverService.recieveFileFromClient(fileTransferSocket);
 
             }catch (Exception e){
                 e.printStackTrace();
