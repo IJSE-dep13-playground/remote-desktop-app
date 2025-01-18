@@ -5,12 +5,8 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -27,13 +23,11 @@ import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
-import lk.ijse.dep13.util.AppRouter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Optional;
@@ -55,8 +49,9 @@ public class ClientMainController {
     public Button btnJoinSession;
     public HBox hBoxFileSender;
     public ImageView imgVideo;
+    public TextField txtSessionID;
 
-    private Socket socket;
+    private Socket screenShareSocket;
     private Socket videoSocket;
     private Socket audioSocket;
     private Socket messageSocket;
@@ -70,26 +65,95 @@ public class ClientMainController {
         btnAbortSession.setDisable(true);
         imgPreview.fitWidthProperty().bind(pnSession.widthProperty());
         imgPreview.fitHeightProperty().bind(pnSession.heightProperty());
+        updateServerStatus("Waiting for join with a Server", "#0066ff");
+
+    }
+
+    private void updateServerStatus(String status, String color) {
+        lblConnection.setText(status);
+        crlConnectionStatus.setStyle("-fx-fill: " + color + ";");
+    }
+
+    private void checkSessionID(){
+        String sessionID = txtSessionID.getText();
+        if (sessionID.isEmpty()) {
+            Platform.runLater(() -> {
+               showAlert(Alert.AlertType.ERROR,null,"Session ID Failed",null,"Session ID is empty");
+            });
+            return;
+        }
+        new Thread(() -> {
+            try (Socket socket = new Socket("127.0.0.1", 9080);
+                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+
+                // Send the session ID to the server
+                writer.write(sessionID + "\n");
+                writer.flush();
+
+                // Read the response
+                String response = reader.readLine();
+
+                Platform.runLater(() -> {
+                    if ("VALID".equals(response)) {
+                        showAlert(Alert.AlertType.INFORMATION, null, "Session Valid", null, "You have entered a valid session ID.");
+                    } else {
+                        showAlert(Alert.AlertType.ERROR,null, "Invalid Session ID", null, "The session ID you entered is invalid.");
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    showAlert(Alert.AlertType.ERROR, null,"Connection Issue", null, "Unable to connect to the server.");
+                });
+            }
+            }).start();
     }
 
     public void btnJoinSessionOnAction(ActionEvent actionEvent) {
-        if (sessionActive) return;
+        if (sessionActive) return; // if session already active , cant connect again
+        if (txtSessionID.getText().isBlank()) {
+            showAlert(Alert.AlertType.ERROR, null, "Empty Session ID", null, "Enter a session ID");
+            return;
+        }
+        checkSessionID();
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000); // Set time for session validation
+                Platform.runLater(() -> {
+                    if (sessionActive) {
+                        showAlert(Alert.AlertType.INFORMATION, null, "Already Connected", null, "You are already connected.");
+                        return;
+                    }
+                    try {
+                        connectToServer();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void connectToServer() {
         new Thread(() -> {
             try {
                 // get time before socket start
                 startTime = System.currentTimeMillis();
-                socket = new Socket("127.0.0.1", 9080);
+                screenShareSocket = new Socket("127.0.0.1", 9084);
                 videoSocket = new Socket("127.0.0.1", 9081);
                 audioSocket = new Socket("127.0.0.1", 9082);
                 messageSocket = new Socket("127.0.0.1", 9083);
-                oos = new ObjectOutputStream(socket.getOutputStream());
-                ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+                oos = new ObjectOutputStream(screenShareSocket.getOutputStream());
+                ois = new ObjectInputStream(new BufferedInputStream(screenShareSocket.getInputStream()));
                 sessionActive = true;
                 Platform.runLater(() -> {
                     btnAbortSession.setDisable(false);
                     btnJoinSession.setDisable(true);
-                    lblConnection.setText("Connected");
-                    crlConnectionStatus.setStyle("-fx-fill: green;");
+                    txtSessionID.clear();
+                    updateServerStatus("Connected with Server", "#green");
                 });
                 // Start receiving and displaying images
                 startImageReceiver();
@@ -97,8 +161,7 @@ public class ClientMainController {
                 e.printStackTrace();
                 Platform.runLater(() -> {
                     showAlert(Alert.AlertType.ERROR,null,"Connection Issue",null,"Your connection is failed to connect");
-                    lblConnection.setText("Connection Failed");
-                    crlConnectionStatus.setStyle("-fx-fill: red;");
+                    updateServerStatus("Connection Failed", "crimson");
                 });
             }
         }).start();
@@ -143,11 +206,10 @@ public class ClientMainController {
             btnAbortSession.setDisable(true);
             lblConnection.setText("Disconnected");
             crlConnectionStatus.setStyle("-fx-fill: red;");
-            showAlert(Alert.AlertType.INFORMATION, null, "Session Ended", null, "The server has ended the session.");
         });
 
         try {
-            if (socket != null && !socket.isClosed()) socket.close();
+            if (screenShareSocket != null && !screenShareSocket.isClosed()) screenShareSocket.close();
             if (videoSocket != null && !videoSocket.isClosed()) videoSocket.close();
             if (audioSocket != null && !audioSocket.isClosed()) audioSocket.close();
         } catch (IOException e) {
@@ -168,9 +230,9 @@ public class ClientMainController {
                 // socket closed time
                 endTime = System.currentTimeMillis();
 
-                if (socket != null && !socket.isClosed()) {
+                if (screenShareSocket != null && !screenShareSocket.isClosed()) {
                     try {
-                        socket.close();
+                        screenShareSocket.close();
                         videoSocket.close();
                         audioSocket.close();
                         Platform.runLater(() -> {
@@ -178,7 +240,7 @@ public class ClientMainController {
                             btnAbortSession.setDisable(true);
                             lblConnection.setText("Disconnected");
                             crlConnectionStatus.setStyle("-fx-fill: red;");
-                            showAlert(Alert.AlertType.INFORMATION,null,"Abort session",null,"Session aborted");
+                            showAlert(Alert.AlertType.INFORMATION,null,"Abort session",null,"The session has been successfully terminated. All connections with the server have been closed.");
                         });
                     } catch (IOException e) {
                         throw new RuntimeException(e);
