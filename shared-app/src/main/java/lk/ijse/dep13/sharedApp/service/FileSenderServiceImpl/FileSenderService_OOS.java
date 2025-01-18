@@ -8,14 +8,10 @@ import java.nio.file.Paths;
 
 public class FileSenderService_OOS implements FileSenderService {
     @Override
-    public void sendFileToServer(File file,Socket fileTransferSocket) throws IOException {
-
-
+    public void sendFile(File file,Socket fileTransferSocket) throws IOException {
         OutputStream os = fileTransferSocket.getOutputStream();
 
-
         // Send the file data
-        FileInputStream fis = new FileInputStream(file);
         String name = file.getName();
 
         ObjectOutputStream oos=new ObjectOutputStream(os);
@@ -23,7 +19,6 @@ public class FileSenderService_OOS implements FileSenderService {
         oos.writeObject(getFileExtension(name));
         oos.writeObject(getFileName(name));
         oos.flush();
-        //oos.close();
     }
 
     @Override
@@ -38,12 +33,8 @@ public class FileSenderService_OOS implements FileSenderService {
 
     @Override
     public String getFileName(String fileName) {
-
         String separator = Paths.get("").getFileSystem().getSeparator();
-
         String[] parts = fileName.split(separator);
-
-
         String fileNameWithoutExtension = parts[parts.length - 1].split("\\.")[0];
         return fileNameWithoutExtension;
     }

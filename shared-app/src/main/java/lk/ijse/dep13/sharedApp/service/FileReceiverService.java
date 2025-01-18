@@ -10,5 +10,5 @@ import java.net.Socket;
 
 public interface FileReceiverService {
 
-    void recieveFileFromClient (Socket localSocket, TextField downloadLocation) throws IOException, ClassNotFoundException;
+    void receiveFile (Socket localSocket, TextField downloadLocation) throws IOException, ClassNotFoundException;
 }

@@ -1,21 +1,18 @@
 package lk.ijse.dep13.sharedApp.service.FileReceiverServiceImpl;
 
-import javafx.application.Platform;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import lk.ijse.dep13.sharedApp.service.FileReceiverService;
 
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
 
-public class FileReceiverServiceImpl01 implements FileReceiverService {
+public class FileReceiverServiceImpl implements FileReceiverService {
 
 
     @Override
-    public void recieveFileFromClient(Socket fileTransferSocket, TextField downloadLocation) throws IOException, ClassNotFoundException {
+    public void receiveFile(Socket fileTransferSocket, TextField downloadLocation) throws IOException, ClassNotFoundException {
 
             InputStream is = fileTransferSocket.getInputStream();
             ObjectInputStream ois=new ObjectInputStream(is);
@@ -30,19 +27,16 @@ public class FileReceiverServiceImpl01 implements FileReceiverService {
             //  String path= Files.getPA
             //fileCopy.createNewFile();
 
-            FileInputStream fis=new FileInputStream(file);
-            FileOutputStream fos=new FileOutputStream(fileCopy);
+            FileInputStream fis = new FileInputStream(file);
+            FileOutputStream fos = new FileOutputStream(fileCopy);
             while(true){
-                byte[] buffer=new byte[1024];
-                int read=fis.read(buffer);
-                if(read==-1)break;
+                byte[] buffer = new byte[1024];
+                int read = fis.read(buffer);
+                if(read == -1) break;
                 fos.write(buffer,0,read);
-                // fos.flush();
             }
             fos.flush();
             fos.close();
-
-
         }
     }
 

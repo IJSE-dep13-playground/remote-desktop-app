@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public interface FileSenderService {
-    void sendFileToServer(File file, Socket fileTransferSocket) throws IOException;
+    void sendFile(File file, Socket fileTransferSocket) throws IOException;
     String getFileExtension(String fileName);
     String getFileName(String fileName);
 }

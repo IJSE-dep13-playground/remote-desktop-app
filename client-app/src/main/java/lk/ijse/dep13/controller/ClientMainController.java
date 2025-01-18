@@ -56,7 +56,7 @@ public class ClientMainController {
     private Socket videoSocket;
     private Socket audioSocket;
     private Socket messageSocket;
-    private Socket fileTransferSocker;
+    private Socket fileTransferSocket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean sessionActive = false;
@@ -150,7 +150,7 @@ public class ClientMainController {
                 messageSocket = new Socket("127.0.0.1", 9083);
                 oos = new ObjectOutputStream(screenShareSocket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(screenShareSocket.getInputStream()));
-                fileTransferSocker=new Socket("127.0.0.1",9084);
+                fileTransferSocket =new Socket("127.0.0.1",9085);
 
 //                oos = new ObjectOutputStream(.getOutputStream());
 //                ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -267,7 +267,7 @@ public class ClientMainController {
         stage.show();
         if(sessionActive){
             FileSenderController fileSenderController=loader.getController();
-            fileSenderController.initialize(fileTransferSocker);
+            fileSenderController.initialize(fileTransferSocket);
         }
 
 

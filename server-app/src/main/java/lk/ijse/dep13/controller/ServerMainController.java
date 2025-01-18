@@ -231,22 +231,20 @@ public class ServerMainController {
 
         Stage stage = new Stage(StageStyle.UTILITY);
         FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.FILE_SENDER);
-
         Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.show();
+
         if (sessionActive){
             try {
-
-                System.out.println("wating for the clinet");
+                System.out.println("waiting for the client");
                 Socket fileTransferSocket =fileTransferServerSocket.accept();
                 System.out.println("Client connected!");
 
                 // Retrieve the controller from the same loader instance
                 FileSenderController controller = loader.getController();
                 controller.initialize(fileTransferSocket);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
