@@ -76,7 +76,7 @@
             </Pane>
             <HBox alignment="CENTER" layoutX="598.0" layoutY="14.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
                <children>
-                  <TextField alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Session ID" />
+                  <TextField fx:id="txtSessionID" alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Session ID" />
                   <Button fx:id="btnJoinSession" mnemonicParsing="false" onAction="#btnJoinSessionOnAction" prefHeight="41.0" prefWidth="171.0" text="Join a Session" />
                   <Button fx:id="btnAbortSession" mnemonicParsing="false" onAction="#btnAbortSessionOnAction" prefHeight="41.0" prefWidth="171.0" text="Abort the Session" />
                </children>

@@ -7,10 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +23,7 @@ import lk.ijse.dep13.sharedApp.controller.ConnectionController;
 import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
+import lk.ijse.dep13.sharedApp.util.SessionManager;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 import lk.ijse.dep13.util.AppRouter;
 
@@ -55,6 +53,7 @@ public class ClientMainController {
     public Button btnJoinSession;
     public HBox hBoxFileSender;
     public ImageView imgVideo;
+    public TextField txtSessionID;
 
     private Socket socket;
     private Socket videoSocket;
@@ -73,7 +72,15 @@ public class ClientMainController {
     }
 
     public void btnJoinSessionOnAction(ActionEvent actionEvent) {
-        if (sessionActive) return;
+        if (sessionActive) return; // if session already active , cant connect again
+        if (SessionManager.validateSessionID(txtSessionID.getText().strip())) {
+            connectToServer();
+        } else {
+            showAlert(Alert.AlertType.ERROR,null, "Session ID Failed", null, "Invalid Session ID");
+        }
+    }
+
+    private void connectToServer() {
         new Thread(() -> {
             try {
                 // get time before socket start
