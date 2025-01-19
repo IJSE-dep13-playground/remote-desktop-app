@@ -7,6 +7,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import lk.ijse.dep13.sharedApp.service.VideoAPI;
+import lk.ijse.dep13.sharedApp.service.AudioAPI;
+import lk.ijse.dep13.sharedApp.service.audioApiImpl.AudioApiImpl;
 import lk.ijse.dep13.sharedApp.service.videoApiImpl.VideoApiImpl;
 
 import java.net.Socket;
@@ -17,15 +19,17 @@ public class VideoCallController {
     public ImageView imgCallDisconnect;
 
     private VideoAPI videoAPI;
+    private AudioAPI audioAPI;
 
-    public void initialize(Socket socket) {
+    public void initialize(Socket videoSocket,Socket audioSocket) {
         try{
-            this.videoAPI = new VideoApiImpl(socket);
-
+            this.videoAPI = new VideoApiImpl(videoSocket);
+            this.audioAPI = new AudioApiImpl(audioSocket);
             // Receiving video in a separate thread
             new Thread(() -> {
                 try {
                     videoAPI.receiveVideo(imgVideoPreview);
+                    audioAPI.receiveAudio();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -35,6 +39,7 @@ public class VideoCallController {
             new Thread(() -> {
                 try {
                     videoAPI.sendVideo();
+                    audioAPI.sendAudio();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

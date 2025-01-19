@@ -278,7 +278,7 @@ public class ClientMainController {
             if (videoSocket != null && !videoSocket.isClosed()) {
                 try {
                     VideoCallController controller = loader.getController();
-                    controller.initialize(videoSocket);
+                    controller.initialize(videoSocket,audioSocket);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
