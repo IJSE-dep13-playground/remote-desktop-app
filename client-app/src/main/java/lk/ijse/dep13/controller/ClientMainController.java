@@ -1,6 +1,5 @@
 package lk.ijse.dep13.controller;
 
-import com.github.sarxos.webcam.Webcam;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -25,12 +24,9 @@ import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Optional;
 
 public class ClientMainController {
@@ -42,14 +38,12 @@ public class ClientMainController {
     public Circle crlConnectionStatus;
     public Label lblConnection;
     public Label lblWelcome;
-    public HBox hBoxSettings;
     public Button btnAbortSession;
     public Pane pnSession;
     public ImageView imgPreview;
     public AnchorPane root;
     public Button btnJoinSession;
     public HBox hBoxFileSender;
-    public ImageView imgVideo;
     public TextField txtSessionID;
     public TextField txtServerIP;
     public Label lblSessionID;
@@ -284,83 +278,39 @@ public class ClientMainController {
 
     public void hBoxVideoOnMouseClicked(MouseEvent mouseEvent) throws IOException {
         Stage stage = new Stage(StageStyle.UTILITY);
-        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.VIDEO_CALL).load());
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.VIDEO_CALL);
+        Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.show();
 
-        // Access the shared controller
-        VideoCallController videoCallController = VideoCallController.getInstance();
-
-        if (videoSocket != null && !videoSocket.isClosed()) {
-            new Thread(() -> {
+        if (sessionActive) {
+            if (videoSocket != null && !videoSocket.isClosed()) {
                 try {
-                    sendVideoStream(videoSocket);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    VideoCallController controller = loader.getController();
+                    controller.initialize(videoSocket);
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-            }).start();
-            new Thread(() -> receiveVideoStream(videoSocket, videoCallController.imgVideoPreview)).start();
-            new Thread(() -> startAudioStreaming(audioSocket)).start();
+            }
         }
     }
-    private void sendVideoStream(Socket videoSocket) throws IOException {
-        try{
-            Webcam webcam = Webcam.getDefault();
-            webcam.open();
+
+    public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.MESSAGE);
+        Scene scene = new Scene(loader.load());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.show();
+
+        if (sessionActive){
             try {
-                OutputStream os = videoSocket.getOutputStream();
-                BufferedOutputStream bos = new BufferedOutputStream(os);
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
-
-                while (!videoSocket.isClosed()) {
-                    BufferedImage bufferedImage = webcam.getImage();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage,"jpeg",baos);
-
-                    oos.writeObject(baos.toByteArray());
-                    oos.flush();
-                    Thread.sleep(1000/30);
-                }
+                MessageController controller = loader.getController();
+                controller.initialize(messageSocket);
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                System.out.println("Video call disconnected");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void receiveVideoStream(Socket videoSocket, ImageView imgVideoPreview) {
-        if (sessionActive) {
-            Task<Image> task = new Task<>() {
-                @Override
-                protected Image call() throws Exception {
-                    InputStream is = videoSocket.getInputStream();
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    ObjectInputStream ois = new ObjectInputStream(bis);
-
-                    while (!videoSocket.isClosed()) {
-                        try{
-                            byte[] bytes = (byte[]) ois.readObject();
-                            updateValue(new Image(new ByteArrayInputStream(bytes)));
-                        } catch (EOFException | SocketException e) {
-                            System.out.println("Server has closed the connection");
-                            break;
-                        } catch (IOException | ClassNotFoundException e) {
-                            e.printStackTrace();
-                        } finally {
-                            handleServerDisconnection();
-                        }
-                    }
-                    return null;
-                }
-            };
-            Platform.runLater(() -> {
-                imgVideoPreview.imageProperty().bind(task.valueProperty());
-            });
-            new Thread(task).start();
         }
     }
 
@@ -413,22 +363,5 @@ public class ClientMainController {
         connectionController.connect("127.0.0.1",InetAddress.getLocalHost().getHostAddress(),"9090",startTime+"");
     }
 
-    public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
-        Stage stage = new Stage(StageStyle.UTILITY);
-        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.MESSAGE);
-        Scene scene = new Scene(loader.load());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.show();
 
-        if (sessionActive){
-            try {
-                MessageController controller = loader.getController();
-                controller.initialize(messageSocket);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

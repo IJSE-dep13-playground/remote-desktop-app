@@ -8,4 +8,5 @@ open module shared.app {
     requires java.desktop;
     requires jdk.compiler;
     requires bridj;
+    requires webcam.capture;
 }

@@ -14,12 +14,10 @@ public interface ChatAPI {
 //        this.ois = new ObjectInputStream(socket.getInputStream());
 //
 //    }
+    void sendMessage(String message) throws IOException ;
 
-    public void sendMessage(String message) throws IOException ;
+    String receiveMessage() throws IOException;
 
-
-    public String receiveMessage() throws IOException;
-
-    public void close() throws IOException ;
+    void close() throws IOException ;
     }
 
