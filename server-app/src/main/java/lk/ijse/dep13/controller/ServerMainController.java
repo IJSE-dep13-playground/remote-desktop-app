@@ -1,7 +1,6 @@
 package lk.ijse.dep13.controller;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,8 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -26,7 +23,6 @@ import lk.ijse.dep13.sharedApp.controller.VideoCallController;
 import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SessionManager;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
-import com.github.sarxos.webcam.Webcam;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -35,7 +31,6 @@ import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Optional;
 
 public class ServerMainController {
@@ -52,7 +47,6 @@ public class ServerMainController {
     public Circle crlStatus;
     public Button btnEndSession;
     public HBox hBoxConnection;
-    public TextArea txtAreaForTesting;
 
     private ServerSocket serverSocket = null;
     private ServerSocket screenServerSocket = null;
