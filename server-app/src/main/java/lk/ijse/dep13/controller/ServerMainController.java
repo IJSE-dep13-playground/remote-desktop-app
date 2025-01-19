@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lk.ijse.dep13.sharedApp.controller.ConnectionController;
 import lk.ijse.dep13.sharedApp.controller.FileSenderController;
 import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
@@ -29,8 +30,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class ServerMainController {
@@ -57,6 +61,8 @@ public class ServerMainController {
     private Socket screenSocket = null;
     private ServerSocket fileTransferServerSocket=null;
     private boolean sessionActive = false;
+    private String startTime;
+    private String clientAddress;
 
 
     public void initialize() {
@@ -81,6 +87,12 @@ public class ServerMainController {
             screenServerSocket = new ServerSocket(9084);
             fileTransferServerSocket=new ServerSocket(9085);
             sessionActive = true;
+
+            // get time before socket start
+            LocalTime connectionStartedTime = LocalTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            startTime = connectionStartedTime.format(formatter);
+
             Platform.runLater(() -> {
                 btnCreateSession.setDisable(true);
                 btnEndSession.setDisable(false);
@@ -123,7 +135,7 @@ public class ServerMainController {
             try {
                 while (!serverSocket.isClosed()) {
                     localSocket = serverSocket.accept();
-                    String clientAddress = localSocket.getInetAddress().getHostAddress();
+                    clientAddress = localSocket.getInetAddress().getHostAddress();
                     Platform.runLater(() -> {
                         btnEndSession.setDisable(false);
                     });
@@ -364,7 +376,17 @@ public class ServerMainController {
         stage.show();
     }
 
-    public void hBoxConnectionOnMouseClicked(MouseEvent mouseEvent) {
+    public void hBoxConnectionOnMouseClicked(MouseEvent mouseEvent) throws IOException {
+        Stage stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.centerOnScreen();
+        stage.resizableProperty().setValue(false);
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.CONNECTION);
+        Scene scene = new Scene(loader.load());
+        stage.setScene(scene);
+        stage.show();
 
+        ConnectionController connectionController = ConnectionController.getInstance();
+        connectionController.connect(clientAddress, InetAddress.getLocalHost().getHostAddress(),"9090",startTime);
     }
 }
