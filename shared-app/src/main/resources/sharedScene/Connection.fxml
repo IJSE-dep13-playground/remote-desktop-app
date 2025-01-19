@@ -1,58 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
 
-
-<AnchorPane prefHeight="318.0" prefWidth="414.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.sharedApp.controller.ConnectionController">
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="294.0" prefWidth="545.0" stylesheets="@../sharedCss/Connection.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.dep13.sharedApp.controller.ConnectionController">
    <children>
-      <Label fx:id="lblH1" layoutX="150.0" layoutY="22.0" text="Connection  Status" />
-      <VBox layoutY="51.0" prefHeight="239.0" prefWidth="414.0">
-         <children>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-               <children>
-                  <Label fx:id="lblClientIp" text="Client IP" />
-                  <TextField fx:id="txtClientIp" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-               <children>
-                  <Label fx:id="lblServerIp" text="Server IP" />
-                  <TextField fx:id="txtServerIp" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-               <children>
-                  <Label fx:id="lblPort" text="Port" />
-                  <TextField fx:id="txtPort" />
-               </children>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="414.0" spacing="20.0">
-               <children>
-                  <Label text="Connection started" />
-                  <Label fx:id="lblTime" text="Time started" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="10.0" layoutY="128.0" prefHeight="100.0" prefWidth="414.0" spacing="20.0">
-               <children>
-                  <Label text="Connection Status" />
-                  <HBox alignment="CENTER" prefHeight="60.0" prefWidth="111.0" spacing="5.0">
-                     <children>
-                        <Circle fx:id="crlStatus" fill="DODGERBLUE" radius="6.0" stroke="BLACK" strokeType="INSIDE" />
-                        <Label fx:id="lblStatus" text="Connected" />
-                     </children>
-                  </HBox>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
+      <ImageView fx:id="imgBackground" fitHeight="350.0" fitWidth="634.0" layoutX="-87.0" layoutY="-51.0" pickOnBounds="true" AnchorPane.bottomAnchor="-5.0" AnchorPane.leftAnchor="-87.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="-51.0">
+         <image>
+            <Image url="@../sharedImage/rm218-katie-22.jpg" />
+         </image>
+      </ImageView>
+      <Label fx:id="lblH1" layoutX="163.0" layoutY="24.0" text="Connection  Status" />
+      <Label fx:id="lblClientIp" layoutX="140.0" layoutY="88.0" text="Client IP" />
+      <TextField fx:id="txtClientIp" alignment="CENTER" editable="false" focusTraversable="false" layoutX="270.0" layoutY="86.0" promptText="Client IP" />
+      <Label fx:id="lblServerIp" layoutX="137.0" layoutY="137.0" text="Server IP" />
+      <TextField fx:id="txtPort" alignment="CENTER" editable="false" focusTraversable="false" layoutX="270.0" layoutY="186.0" promptText="Port" />
+      <Label fx:id="lblPort" layoutX="156.0" layoutY="187.0" text="Port" />
+      <TextField fx:id="txtServerIp" alignment="CENTER" editable="false" focusTraversable="false" layoutX="270.0" layoutY="135.0" promptText="Server IP" />
+      <Label fx:id="lblTime" layoutX="94.0" layoutY="235.0" text="Connection started" />
+      <TextField fx:id="txtTime" alignment="CENTER" editable="false" focusTraversable="false" layoutX="270.0" layoutY="233.0" promptText="Started Time" />
    </children>
 </AnchorPane>

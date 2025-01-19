@@ -27,6 +27,9 @@ import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Optional;
 
 public class ClientMainController {
@@ -57,8 +60,7 @@ public class ClientMainController {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private boolean sessionActive = false;
-    private long startTime;
-    private long endTime;
+    private String startTime;
     private String serverIP;
 
     public void initialize() throws IOException {
@@ -66,7 +68,6 @@ public class ClientMainController {
         imgPreview.fitWidthProperty().bind(pnSession.widthProperty());
         imgPreview.fitHeightProperty().bind(pnSession.heightProperty());
         updateServerStatus("Waiting for join with a Server", "#0066ff");
-
     }
 
     private void updateServerStatus(String status, String color) {
@@ -77,12 +78,6 @@ public class ClientMainController {
     private void checkSessionID(){
         String sessionID = txtSessionID.getText();
         serverIP = txtServerIP.getText();
-        if (sessionID.isEmpty()) {
-            Platform.runLater(() -> {
-               showAlert(Alert.AlertType.ERROR,"Session ID Failed",null,"Session ID is empty");
-            });
-            return;
-        }
         new Thread(() -> {
             try (Socket socket = new Socket(serverIP, 9080);
                  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -144,7 +139,10 @@ public class ClientMainController {
         new Thread(() -> {
             try {
                 // get time before socket start
-                startTime = System.currentTimeMillis();
+                LocalTime connectionStartedTime = LocalTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                startTime = connectionStartedTime.format(formatter);
+
                 screenShareSocket = new Socket(serverIP, 9084);
                 videoSocket = new Socket(serverIP, 9081);
                 audioSocket = new Socket(serverIP, 9082);
@@ -203,10 +201,6 @@ public class ClientMainController {
     private void handleServerDisconnection() {
         Platform.runLater(() -> {
             sessionActive = false;
-
-            // socket closed time
-            endTime = System.currentTimeMillis();
-
             btnJoinSession.setDisable(false);
             btnAbortSession.setDisable(true);
             updateServerStatus("Disconnected", "red");
@@ -230,10 +224,6 @@ public class ClientMainController {
         new Thread(() -> {
             if (result.get() == ButtonType.OK) {
                 sessionActive = false;
-
-                // socket closed time
-                endTime = System.currentTimeMillis();
-
                 if (screenShareSocket != null && !screenShareSocket.isClosed()) {
                     try {
                         screenShareSocket.close();
@@ -356,12 +346,12 @@ public class ClientMainController {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.centerOnScreen();
         stage.resizableProperty().setValue(false);
-        Scene scene = new Scene(SharedAppRouter.getContainer(SharedAppRouter.Routes.CONNECTION).load());
+        FXMLLoader loader = SharedAppRouter.getContainer(SharedAppRouter.Routes.CONNECTION);
+        Scene scene = new Scene(loader.load());
         stage.setScene(scene);
         stage.show();
+
         ConnectionController connectionController = ConnectionController.getInstance();
-        connectionController.connect("127.0.0.1",InetAddress.getLocalHost().getHostAddress(),"9090",startTime+"");
+        connectionController.connect(InetAddress.getLocalHost().getHostAddress(), serverIP,"9090",startTime);
     }
-
-
 }

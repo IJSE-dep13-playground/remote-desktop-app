@@ -2,6 +2,7 @@ package lk.ijse.dep13.sharedApp.controller;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 
 public class ConnectionController {
@@ -14,10 +15,13 @@ public class ConnectionController {
     public Label lblClientIp;
     public TextField txtClientIp;
     public Label lblServerIp;
-    public TextField txtServerIp;
     public Label lblH1;
 
     private static ConnectionController instance;
+    public Label lblConnectionStatus;
+    public TextField txtTime;
+    public ImageView imgBackground;
+    public TextField txtServerIp;
 
     public ConnectionController() {
         instance = this;
@@ -27,22 +31,17 @@ public class ConnectionController {
         return instance;
     }
 
-
-    public void init(String name) {
-        lblH1.setText(name);
-    }
-
     public void initConnection(String serverIP, String clientIP,String serverPort, String connectionTime) {
             txtServerIp.setText(serverIP);
             txtClientIp.setText(clientIP);
             txtPort.setText(serverPort);
-            lblTime.setText(connectionTime);
+            txtTime.setText(connectionTime);
     }
 
-    public void connect(String serverIP, String clientIP,String serverPort, String connectionTime) {
-        txtServerIp.setText(serverIP);
+    public void connect(String clientIP,String serverIP, String port, String connectionTime) {
         txtClientIp.setText(clientIP);
-        txtPort.setText(serverPort);
-        lblTime.setText(connectionTime);
+        txtServerIp.setText(serverIP);
+        txtPort.setText(port);
+        txtTime.setText(connectionTime);
     }
 }

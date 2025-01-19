@@ -1,0 +1,21 @@
+#lblH1{
+    -fx-font-family: Poppins;
+    -fx-font-weight: bold;
+    -fx-text-fill: #303030;
+    -fx-text-alignment: center;
+    -fx-font-size: 22px;
+}
+
+#lblClientIp,#lblServerIp,#lblPort, #lblTime{
+    -fx-font-family: "Poppins";
+    -fx-text-fill: #404040;
+    -fx-font-size: 16px;
+}
+
+.text-field{
+    -fx-background-radius: 15px;
+    -fx-font-family: "Poppins Light";
+}
+
+
+
