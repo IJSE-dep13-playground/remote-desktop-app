@@ -267,8 +267,9 @@ public class ServerMainController {
         if (sessionActive){
             try{
                 Socket videoSocket = videoServerSocket.accept();
+                Socket audioSocket = audioServerSocket.accept();
                 VideoCallController controller = loader.getController();
-                controller.initialize(videoSocket);
+                controller.initialize(videoSocket,audioSocket);
             } catch (Exception e) {
                 e.printStackTrace();
             }
