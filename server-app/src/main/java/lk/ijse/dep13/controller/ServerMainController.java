@@ -118,7 +118,7 @@ public class ServerMainController {
             fileTransferServerSocket = new ServerSocket(0);
             int newPort = serverSocket.getLocalPort();
             Platform.runLater(() -> {
-                    updateServerStatus("Port 9080 already in use. Server started on port " + newPort,"orange");
+                    updateServerStatus("Port 9080 already in use. Server started on port " + newPort + " " + SessionManager.generateSessionID(),"orange");
                     btnCreateSession.setDisable(true);
                     btnEndSession.setDisable(false);
             System.out.println("Server started on port " + newPort);
@@ -164,6 +164,9 @@ public class ServerMainController {
                     bw.flush();
                     System.out.println("Session ID validated: " + sessionID);
 
+                    // change background color
+                    changeDesktopColor("black");
+
                     // Start writing displaying images
                     screenSocket = screenServerSocket.accept();
                     shareScreen(screenSocket);
@@ -175,10 +178,31 @@ public class ServerMainController {
                     System.out.println("Session ID invalid: " + sessionID);
                     localSocket.close();
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).start();
+    }
+
+    public static void changeDesktopColor(String color) throws Exception {
+        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+            String[] command1 = {"gsettings", "set", "org.gnome.desktop.background", "picture-options", "none"};
+            Runtime.getRuntime().exec(command1).waitFor();
+            String[] command2 = {"gsettings", "set", "org.gnome.desktop.background", "primary-color", "%s".formatted(color)};
+            Runtime.getRuntime().exec(command1).waitFor();
+            Runtime.getRuntime().exec(command2);
+        } else {
+            throw new UnsupportedOperationException("Unsupported OS");
+        }
+    }
+
+    public static void revertDesktop() throws IOException {
+        if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+            String[] setColor = {"gsettings", "set", "org.gnome.desktop.background", "picture-options", "zoom"};
+            Runtime.getRuntime().exec(setColor);
+        } else {
+            throw new UnsupportedOperationException("Unsupported OS");
+        }
     }
 
     private void shareScreen(Socket clientSocket) throws IOException {
@@ -212,9 +236,17 @@ public class ServerMainController {
         closeSocket(audioServerSocket, "audioServerSocket");
         closeSocket(videoServerSocket, "videoServerSocket");
         closeSocket(messageServerSocket, "messageServerSocket");
+        closeSocket(fileTransferServerSocket, "fileTransferServerSocket");
+        // revert background image
+        try {
+            revertDesktop();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // Reset UI buttons
         Platform.runLater(() -> {
+
             btnEndSession.setDisable(true);
             btnCreateSession.setDisable(false);
         });
@@ -299,34 +331,7 @@ public class ServerMainController {
         }
     }
 
-    private void startAudioStreaming(Socket audioSocket) {
-        try {
-            AudioRecorder audioRecorder = new AudioRecorder();
-
-            // Start sending audio
-            new Thread(() -> {
-                try {
-                    audioRecorder.startRecording(audioSocket.getOutputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
-            // Start receiving and playing audio
-            new Thread(() -> {
-                try {
-                    audioRecorder.startPlaying(audioSocket.getInputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void btnEndSessionOnAction(ActionEvent actionEvent) {
+    public void btnEndSessionOnAction(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("End Session");
         alert.setHeaderText(null);
@@ -335,7 +340,7 @@ public class ServerMainController {
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
             sessionActive = false;
-
+            revertDesktop();
             // Close all sockets safely using the helper method
             closeSocket(localSocket, "localSocket");
             closeSocket(screenSocket, "screenSocket");
