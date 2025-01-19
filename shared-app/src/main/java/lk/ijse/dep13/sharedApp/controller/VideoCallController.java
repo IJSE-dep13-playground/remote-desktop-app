@@ -21,14 +21,25 @@ public class VideoCallController {
     public void initialize(Socket socket) {
         try{
             this.videoAPI = new VideoApiImpl(socket);
+
+            // Receiving video in a separate thread
             new Thread(() -> {
-                try{
-                        videoAPI.receiveVideo(imgVideoPreview);
-                        new Thread(() -> videoAPI.sendVideo()).start();
-                } catch (Exception e){
+                try {
+                    videoAPI.receiveVideo(imgVideoPreview);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }).start();
+
+            // Sending video in a separate thread
+            new Thread(() -> {
+                try {
+                    videoAPI.sendVideo();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
         } catch (Exception e){
             e.printStackTrace();
         }
