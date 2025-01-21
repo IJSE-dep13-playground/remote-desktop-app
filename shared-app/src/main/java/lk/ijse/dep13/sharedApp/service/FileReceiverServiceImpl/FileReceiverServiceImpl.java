@@ -6,6 +6,7 @@ import lk.ijse.dep13.sharedApp.service.FileReceiverService;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class FileReceiverServiceImpl implements FileReceiverService {
@@ -22,7 +23,13 @@ public class FileReceiverServiceImpl implements FileReceiverService {
             //file.createNewFile();
 
             String separator = Paths.get("").getFileSystem().getSeparator();
-            File fileCopy=new File(System.getProperty("user.home"),"transferredFiles"+separator+fileName+"."+ext);
+            File saveDir=new File(System.getProperty("user.home"),"Desktop/transferredFiles");
+            if(!saveDir.exists()){
+                saveDir.mkdir();
+            }
+
+            File fileCopy=new File(saveDir,separator+fileName+"."+ext);
+           // fileCopy.createNewFile();
             downloadLocation.setText(fileCopy.getAbsolutePath());
             //  String path= Files.getPA
             //fileCopy.createNewFile();
