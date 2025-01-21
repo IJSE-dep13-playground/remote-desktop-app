@@ -1,7 +1,5 @@
 package lk.ijse.dep13.sharedApp.service;
 
-import lk.ijse.dep13.sharedApp.util.dto.Message;
-
 import java.io.*;
 import java.net.Socket;
 
