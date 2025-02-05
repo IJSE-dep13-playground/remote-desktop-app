@@ -3,31 +3,11 @@ package lk.ijse.dep13.sharedApp.service;
 import java.io.*;
 import java.net.Socket;
 
-public class ChatAPI{
-    private Socket socket;
-    private ObjectOutputStream oos;
-    private BufferedReader reader;
-    private BufferedWriter writer;
-    private ObjectInputStream ois;
+public interface ChatAPI {
 
-    public ChatAPI(Socket socket) throws IOException {
-        this.socket = socket;
-        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-    }
 
-    public void sendMessage(String message) throws IOException {
-        writer.write(message + "\n");
-        writer.flush();
-    }
+    public void sendMessage(String message) throws IOException;
 
-    public String receiveMessage() throws IOException {
-        return reader.readLine();
-    }
+    public String receiveMessage() throws IOException;
 
-    public void close() throws IOException {
-        if (socket != null && !socket.isClosed()) {
-            socket.close();
-        }
-    }
 }

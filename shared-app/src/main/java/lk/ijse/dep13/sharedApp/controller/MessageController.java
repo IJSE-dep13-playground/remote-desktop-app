@@ -2,13 +2,17 @@ package lk.ijse.dep13.sharedApp.controller;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import lk.ijse.dep13.sharedApp.service.ChatAPI;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
+import lk.ijse.dep13.sharedApp.service.ChatAPI;
+import lk.ijse.dep13.sharedApp.service.chatAPIImpl.ChatAPIService;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -19,28 +23,37 @@ public class MessageController {
     public Label lblH1;
     public AnchorPane root;
 
+
+    String test = null;
     private ChatAPI chatAPI;
+    private volatile boolean running = true;
 
-    public void initialize(Socket socket) {
-        try {
-            this.chatAPI = new ChatAPI(socket);
+    public void initialize(BufferedWriter bw, BufferedReader br) throws IOException {
+        chatAPI = new ChatAPIService(bw,br);
+        new Thread(() -> {
+            while (running) {
 
-            // Start a thread to listen for incoming messages
-            new Thread(() -> {
                 try {
-                    while (true) {
-                        String message = chatAPI.receiveMessage();
-                        Platform.runLater(() -> txtAreaChat.appendText("Client: " + message + "\n"));
-                    }
+                    String message = chatAPI.receiveMessage();
+                    Platform.runLater(() -> txtAreaChat.appendText("Client: " + message + "\n"));
                 } catch (IOException e) {
                     Platform.runLater(() -> txtAreaChat.appendText("Connection closed.\n"));
+                    throw new RuntimeException(e);
                 }
-            }).start();
 
-        } catch (IOException e) {
-            txtAreaChat.appendText("Failed to initialize chat.\n");
-        }
+            }
+
+        }).start();
+
     }
+
+    public void handleCloseRequest(WindowEvent event) {
+        running = false;
+        System.out.println("Window has been closed");
+
+
+    }
+
 
     public void btnSend(ActionEvent actionEvent) {
         String message = txtInput.getText().strip();

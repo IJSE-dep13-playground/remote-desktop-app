@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import lk.ijse.dep13.sharedApp.controller.ConnectionController;
 import lk.ijse.dep13.sharedApp.controller.FileSenderController;
 import lk.ijse.dep13.sharedApp.controller.MessageController;
@@ -51,6 +52,7 @@ public class ServerMainController {
     public Circle crlStatus;
     public Button btnEndSession;
     public HBox hBoxConnection;
+    private Socket messageSocket;
 
     private ServerSocket serverSocket = null;
     private ServerSocket screenServerSocket = null;
@@ -63,6 +65,8 @@ public class ServerMainController {
     private boolean sessionActive = false;
     private String startTime;
     private String clientAddress;
+    private BufferedReader br;
+    private BufferedWriter bw;
 
 
     public void initialize() {
@@ -84,6 +88,17 @@ public class ServerMainController {
             videoServerSocket = new ServerSocket(9081);
             audioServerSocket = new ServerSocket(9082);
             messageServerSocket = new ServerSocket(9083);
+            System.out.println(7);
+          new Thread(()->{
+              try {
+                  messageSocket=messageServerSocket.accept();
+                  bw=new BufferedWriter(new OutputStreamWriter(messageSocket.getOutputStream()));
+                  br=new BufferedReader(new InputStreamReader(messageSocket.getInputStream()));
+              } catch (IOException e) {
+                  throw new RuntimeException(e);
+              }
+          }).start();
+            System.out.println(8);
             screenServerSocket = new ServerSocket(9084);
             fileTransferServerSocket=new ServerSocket(9085);
             sessionActive = true;
@@ -100,6 +115,7 @@ public class ServerMainController {
             });
             return true;
         } catch (BindException e) {
+            e.printStackTrace();
             // handle of port conflicts
             return handlePortConflicts();
         } catch (IOException e) {
@@ -315,15 +331,19 @@ public class ServerMainController {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
         stage.show();
+        MessageController controller = loader.getController();
+        stage.setOnCloseRequest((WindowEvent w)->{
+            controller.handleCloseRequest(w);
+        });
 
         if (sessionActive){
             try {
-                Socket messageSocket = messageServerSocket.accept();
+
                 System.out.println("Client connected!");
 
                 // Retrieve the controller from the same loader instance
-                MessageController controller = loader.getController();
-                controller.initialize(messageSocket);
+
+                controller.initialize(bw,br);
 
             } catch (Exception e) {
                 e.printStackTrace();

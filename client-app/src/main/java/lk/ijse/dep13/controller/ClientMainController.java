@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import lk.ijse.dep13.sharedApp.controller.ConnectionController;
 import lk.ijse.dep13.sharedApp.controller.FileSenderController;
 import lk.ijse.dep13.sharedApp.controller.MessageController;
@@ -62,6 +63,8 @@ public class ClientMainController {
     private boolean sessionActive = false;
     private String startTime;
     private String serverIP;
+    private BufferedWriter bw;
+    private BufferedReader br;
 
     public void initialize() throws IOException {
         btnAbortSession.setDisable(true);
@@ -147,6 +150,8 @@ public class ClientMainController {
                 videoSocket = new Socket(serverIP, 9081);
                 audioSocket = new Socket(serverIP, 9082);
                 messageSocket = new Socket(serverIP, 9083);
+                bw=new BufferedWriter(new OutputStreamWriter(messageSocket.getOutputStream()));
+                br=new BufferedReader(new InputStreamReader(messageSocket.getInputStream()));
                 fileTransferSocket =new Socket(serverIP,9085);
                 oos = new ObjectOutputStream(screenShareSocket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(screenShareSocket.getInputStream()));
@@ -292,12 +297,17 @@ public class ClientMainController {
         Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
+        stage.setTitle("YOUR MOMO");
         stage.show();
+        MessageController controller = loader.getController();
+        stage.setOnCloseRequest((WindowEvent w)->{
+           controller.handleCloseRequest(w);
+        });
 
         if (sessionActive){
             try {
-                MessageController controller = loader.getController();
-                controller.initialize(messageSocket);
+
+                controller.initialize(bw,br);
             } catch (Exception e) {
                 e.printStackTrace();
             }

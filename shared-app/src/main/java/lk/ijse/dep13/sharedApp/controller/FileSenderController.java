@@ -31,6 +31,7 @@ public class FileSenderController {
     FileReceiverService fileReceiverService = new FileReceiverServiceImpl();
 
     public void initialize(Socket socket) {
+
         btnSend.setDisable(true);
         this.fileTransferSocket=socket;
     }
