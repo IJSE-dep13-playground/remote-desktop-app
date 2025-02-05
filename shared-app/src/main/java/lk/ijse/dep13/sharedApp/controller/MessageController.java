@@ -31,10 +31,11 @@ public class MessageController {
     public void initialize(BufferedWriter bw, BufferedReader br) throws IOException {
         chatAPI = new ChatAPIService(bw,br);
         new Thread(() -> {
-            while (running) {
+           l1 :while (running) {
 
                 try {
                     String message = chatAPI.receiveMessage();
+                    if(message.equals("closingTheChat-876213")) break l1;
                     Platform.runLater(() -> txtAreaChat.appendText("Client: " + message + "\n"));
                 } catch (IOException e) {
                     Platform.runLater(() -> txtAreaChat.appendText("Connection closed.\n"));
@@ -47,9 +48,13 @@ public class MessageController {
 
     }
 
-    public void handleCloseRequest(WindowEvent event) {
+    public void handleCloseRequest(WindowEvent event)  {
         running = false;
         System.out.println("Window has been closed");
+        try {
+        chatAPI.sendMessage("closingTheChat-876213");}catch (IOException e){
+            e.printStackTrace();
+        }
 
 
     }

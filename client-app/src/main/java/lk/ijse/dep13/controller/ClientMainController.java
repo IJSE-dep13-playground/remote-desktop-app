@@ -297,7 +297,7 @@ public class ClientMainController {
         Scene scene = new Scene(loader.load());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
-        stage.setTitle("YOUR MOMO");
+     
         stage.show();
         MessageController controller = loader.getController();
         stage.setOnCloseRequest((WindowEvent w)->{
