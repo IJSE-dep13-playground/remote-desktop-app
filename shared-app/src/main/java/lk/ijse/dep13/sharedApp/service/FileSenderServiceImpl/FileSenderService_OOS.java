@@ -7,14 +7,17 @@ import java.net.Socket;
 import java.nio.file.Paths;
 
 public class FileSenderService_OOS implements FileSenderService {
+
+    private ObjectOutputStream oos;
+
+    public FileSenderService_OOS(ObjectOutputStream oos){
+        this.oos=oos;
+    }
+
     @Override
     public void sendFile(File file,Socket fileTransferSocket) throws IOException {
-        OutputStream os = fileTransferSocket.getOutputStream();
 
-        // Send the file data
         String name = file.getName();
-
-        ObjectOutputStream oos=new ObjectOutputStream(os);
         oos.writeObject(file);
         oos.writeObject(getFileExtension(name));
         oos.writeObject(getFileName(name));

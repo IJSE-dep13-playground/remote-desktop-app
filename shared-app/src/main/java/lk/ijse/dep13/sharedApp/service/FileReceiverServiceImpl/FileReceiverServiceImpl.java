@@ -11,12 +11,15 @@ import java.nio.file.Paths;
 
 public class FileReceiverServiceImpl implements FileReceiverService {
 
+    private ObjectInputStream ois;
+    public FileReceiverServiceImpl(ObjectInputStream ois){
+        this.ois=ois;
+    }
 
     @Override
     public void receiveFile(Socket fileTransferSocket, TextField downloadLocation) throws IOException, ClassNotFoundException {
 
-            InputStream is = fileTransferSocket.getInputStream();
-            ObjectInputStream ois=new ObjectInputStream(is);
+
             File file=(File) ois.readObject();
             String ext=(String)ois.readObject();
             String fileName=(String)ois.readObject();

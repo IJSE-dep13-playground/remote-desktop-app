@@ -65,6 +65,8 @@ public class ClientMainController {
     private String serverIP;
     private BufferedWriter bw;
     private BufferedReader br;
+    private ObjectInputStream ois_ft;
+    private ObjectOutputStream oos_ft;
 
     public void initialize() throws IOException {
         btnAbortSession.setDisable(true);
@@ -153,6 +155,9 @@ public class ClientMainController {
                 bw=new BufferedWriter(new OutputStreamWriter(messageSocket.getOutputStream()));
                 br=new BufferedReader(new InputStreamReader(messageSocket.getInputStream()));
                 fileTransferSocket =new Socket(serverIP,9085);
+              ois_ft=new ObjectInputStream(fileTransferSocket.getInputStream());
+              oos_ft=new ObjectOutputStream(fileTransferSocket.getOutputStream());
+
                 oos = new ObjectOutputStream(screenShareSocket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(screenShareSocket.getInputStream()));
                 sessionActive = true;
@@ -259,7 +264,7 @@ public class ClientMainController {
         stage.show();
         if(sessionActive){
             FileSenderController fileSenderController=loader.getController();
-            fileSenderController.initialize(fileTransferSocket);
+            fileSenderController.initialize(fileTransferSocket,oos_ft,ois_ft);
         }
     }
 

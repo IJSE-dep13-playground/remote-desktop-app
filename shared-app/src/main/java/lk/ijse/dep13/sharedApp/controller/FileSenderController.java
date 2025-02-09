@@ -26,20 +26,27 @@ public class FileSenderController {
     private Socket fileTransferSocket;
 
     public File file;
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
 
-    FileSenderService fileSenderService = new FileSenderService_OOS();
-    FileReceiverService fileReceiverService = new FileReceiverServiceImpl();
 
-    public void initialize(Socket socket) {
+    private FileSenderService fileSenderService;
+    private FileReceiverService fileReceiverService;
+
+    public void initialize(Socket socket, ObjectOutputStream oos, ObjectInputStream ois) {
 
         btnSend.setDisable(true);
-        this.fileTransferSocket=socket;
+        this.oos = oos;
+        this.ois = ois;
+        this.fileSenderService = new FileSenderService_OOS(oos);
+        this.fileReceiverService = new FileReceiverServiceImpl(ois);
+        this.fileTransferSocket = socket;
     }
 
-    public void btnSendOnAction(ActionEvent actionEvent){
+    public void btnSendOnAction(ActionEvent actionEvent) {
         new Thread(() -> {
             try {
-                fileSenderService.sendFile(file,fileTransferSocket);
+                fileSenderService.sendFile(file, fileTransferSocket);
             } catch (IOException e) {
                 System.out.println("Error sending file");
                 throw new RuntimeException(e);
@@ -67,10 +74,11 @@ public class FileSenderController {
     public void btnReceiveOnAction(ActionEvent actionEvent) {
         new Thread(() -> {
             try {
-                fileReceiverService.receiveFile(fileTransferSocket,txtSavedLocation);
-            }catch (Exception e){
+                fileReceiverService.receiveFile(fileTransferSocket, txtSavedLocation);
+            } catch (Exception e) {
                 System.out.println("Error receiving file");
                 e.printStackTrace();
             }
         }).start();
-}}
+    }
+}
