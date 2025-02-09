@@ -12,7 +12,6 @@ public class ChatAPIService implements ChatAPI {
 
 
     public ChatAPIService(BufferedWriter bw,BufferedReader br) throws IOException {
-
         this.reader = br;
         this.writer = bw;
     }
@@ -25,6 +24,4 @@ public class ChatAPIService implements ChatAPI {
     public String receiveMessage() throws IOException {
         return reader.readLine();
     }
-
-
-    }
+}
