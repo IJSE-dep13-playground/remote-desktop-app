@@ -32,7 +32,6 @@ public class MessageController {
         chatAPI = new ChatAPIService(bw,br);
         new Thread(() -> {
            l1 :while (running) {
-
                 try {
                     String message = chatAPI.receiveMessage();
                     if(message.equals("closingTheChat-876213")) break l1;
@@ -41,7 +40,6 @@ public class MessageController {
                     Platform.runLater(() -> txtAreaChat.appendText("Connection closed.\n"));
                     throw new RuntimeException(e);
                 }
-
             }
 
         }).start();
@@ -52,11 +50,10 @@ public class MessageController {
         running = false;
         System.out.println("Window has been closed");
         try {
-        chatAPI.sendMessage("closingTheChat-876213");}catch (IOException e){
+        chatAPI.sendMessage("closingTheChat-876213");
+        }catch (IOException e){
             e.printStackTrace();
         }
-
-
     }
 
 
