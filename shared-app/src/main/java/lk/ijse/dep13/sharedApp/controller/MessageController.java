@@ -29,12 +29,11 @@ public class MessageController {
     public void initialize(BufferedWriter bw, BufferedReader br) throws IOException {
         chatAPI = new ChatAPIService(bw,br);
         new Thread(() -> {
-           l1 :while (running) {
+           while (running) {
                 try {
                     if (!running) break;
                     String message = chatAPI.receiveMessage();
                     if (message == null || !running) break;
-//                    if(message.equals("closingTheChat-876213")) break l1;
                     Platform.runLater(() -> txtAreaChat.appendText("Client: " + message + "\n"));
                 } catch (IOException e) {
                     if (!running) break;
@@ -42,22 +41,11 @@ public class MessageController {
                     throw new RuntimeException(e);
                 }
             }
-
         }).start();
-
     }
 
     public void handleCloseRequest(WindowEvent event)  {
         running = false;
-<<<<<<< HEAD
-//        System.out.println("Window has been closed");
-=======
->>>>>>> videoAPI-fix-2
-//        try {
-//        chatAPI.sendMessage("closingTheChat-876213");
-//        }catch (IOException e){
-//            e.printStackTrace();
-//        }
         Stage stage = (Stage) ((WindowEvent) event).getSource();
         stage.close();
     }
@@ -66,7 +54,6 @@ public class MessageController {
     public void btnSend(ActionEvent actionEvent) {
         String message = txtInput.getText().strip();
         if (message.isEmpty()) return;
-
         try {
             chatAPI.sendMessage(message);
             txtAreaChat.appendText("You: " + message + "\n");

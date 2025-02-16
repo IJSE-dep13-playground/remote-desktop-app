@@ -49,6 +49,3 @@ public class FileReceiverServiceImpl implements FileReceiverService {
             fos.close();
         }
     }
-
-
-

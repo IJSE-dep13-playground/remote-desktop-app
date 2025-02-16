@@ -68,6 +68,8 @@ public class ServerMainController {
     private BufferedReader br;
     private BufferedWriter bw;
     private Socket videoSocket;
+    private ObjectOutputStream oos_ft;
+    private ObjectInputStream ois_ft;
 
     public void initialize() {
         updateServerStatus("Create a Session to connect...","#0066ff");
@@ -304,7 +306,7 @@ public class ServerMainController {
 
                 // Retrieve the controller from the same loader instance
                 FileSenderController controller = loader.getController();
-                controller.initialize(fileTransferSocket);
+                controller.initialize(fileTransferSocket,oos_ft,ois_ft);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -344,12 +346,9 @@ public class ServerMainController {
 
         if (sessionActive){
             try {
-
                 System.out.println("Client connected!");
-
                 // Retrieve the controller from the same loader instance
                 controller.initialize(bw,br);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

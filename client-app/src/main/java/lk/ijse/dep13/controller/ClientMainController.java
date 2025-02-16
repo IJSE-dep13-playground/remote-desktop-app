@@ -17,12 +17,10 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import lk.ijse.dep13.sharedApp.controller.ConnectionController;
 import lk.ijse.dep13.sharedApp.controller.FileSenderController;
 import lk.ijse.dep13.sharedApp.controller.MessageController;
 import lk.ijse.dep13.sharedApp.controller.VideoCallController;
-import lk.ijse.dep13.sharedApp.util.AudioRecorder;
 import lk.ijse.dep13.sharedApp.util.SharedAppRouter;
 
 import java.io.*;
@@ -30,7 +28,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Optional;
 
 public class ClientMainController {
@@ -155,8 +152,8 @@ public class ClientMainController {
                 bw=new BufferedWriter(new OutputStreamWriter(messageSocket.getOutputStream()));
                 br=new BufferedReader(new InputStreamReader(messageSocket.getInputStream()));
                 fileTransferSocket =new Socket(serverIP,9085);
-              ois_ft=new ObjectInputStream(fileTransferSocket.getInputStream());
-              oos_ft=new ObjectOutputStream(fileTransferSocket.getOutputStream());
+                ois_ft=new ObjectInputStream(fileTransferSocket.getInputStream());
+                 oos_ft=new ObjectOutputStream(fileTransferSocket.getOutputStream());
 
                 oos = new ObjectOutputStream(screenShareSocket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(screenShareSocket.getInputStream()));
@@ -293,7 +290,6 @@ public class ClientMainController {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
