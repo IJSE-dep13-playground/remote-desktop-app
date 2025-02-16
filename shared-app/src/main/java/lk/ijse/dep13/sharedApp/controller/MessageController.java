@@ -49,7 +49,6 @@ public class MessageController {
 
     public void handleCloseRequest(WindowEvent event)  {
         running = false;
-//        System.out.println("Window has been closed");
 //        try {
 //        chatAPI.sendMessage("closingTheChat-876213");
 //        }catch (IOException e){
