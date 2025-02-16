@@ -53,8 +53,6 @@ public class ServerMainController {
     public Button btnEndSession;
     public HBox hBoxConnection;
     private Socket messageSocket;
-    private Socket fileTransferSocket;
-
 
     private ServerSocket serverSocket = null;
     private ServerSocket screenServerSocket = null;
@@ -69,8 +67,7 @@ public class ServerMainController {
     private String clientAddress;
     private BufferedReader br;
     private BufferedWriter bw;
-    private ObjectOutputStream oos_ft;
-    private ObjectInputStream ois_ft;
+    private Socket videoSocket;
 
     public void initialize() {
         updateServerStatus("Create a Session to connect...","#0066ff");
@@ -91,7 +88,6 @@ public class ServerMainController {
             videoServerSocket = new ServerSocket(9081);
             audioServerSocket = new ServerSocket(9082);
             messageServerSocket = new ServerSocket(9083);
-
           new Thread(()->{
               try {
                   messageSocket=messageServerSocket.accept();
@@ -102,17 +98,16 @@ public class ServerMainController {
               }
           }).start();
 
+          new Thread(()->{
+              try {
+                  videoSocket = videoServerSocket.accept();
+              } catch (IOException e) {
+                  throw new RuntimeException(e);
+              }
+          }).start();
+
             screenServerSocket = new ServerSocket(9084);
             fileTransferServerSocket=new ServerSocket(9085);
-            new Thread(()->{
-                try {
-                    fileTransferSocket=fileTransferServerSocket.accept();
-                    oos_ft=new ObjectOutputStream(fileTransferSocket.getOutputStream());
-                    ois_ft=new ObjectInputStream(fileTransferSocket.getInputStream());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
             sessionActive = true;
 
             // get time before socket start
@@ -304,12 +299,12 @@ public class ServerMainController {
         if (sessionActive){
             try {
                 System.out.println("waiting for the client");
-
+                Socket fileTransferSocket =fileTransferServerSocket.accept();
                 System.out.println("Client connected!");
 
                 // Retrieve the controller from the same loader instance
                 FileSenderController controller = loader.getController();
-                controller.initialize(fileTransferSocket,oos_ft,ois_ft);
+                controller.initialize(fileTransferSocket);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -324,14 +319,13 @@ public class ServerMainController {
         stage.setScene(scene);
         stage.show();
 
+        VideoCallController videoCallController = loader.getController();
         if (sessionActive){
             try{
-                Socket videoSocket = videoServerSocket.accept();
-                Socket audioSocket = audioServerSocket.accept();
-                VideoCallController controller = loader.getController();
-                controller.initialize(videoSocket,audioSocket);
+                System.out.println("waiting for the client");
+                videoCallController.initialize(videoSocket);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Error starting video call: " + e.getMessage());
             }
         }
     }
@@ -344,8 +338,8 @@ public class ServerMainController {
         stage.setScene(scene);
         stage.show();
         MessageController controller = loader.getController();
-        stage.setOnCloseRequest((WindowEvent w)->{
-            controller.handleCloseRequest(w);
+        stage.setOnCloseRequest((event)->{
+            controller.handleCloseRequest(event);
         });
 
         if (sessionActive){
@@ -354,7 +348,6 @@ public class ServerMainController {
                 System.out.println("Client connected!");
 
                 // Retrieve the controller from the same loader instance
-
                 controller.initialize(bw,br);
 
             } catch (Exception e) {

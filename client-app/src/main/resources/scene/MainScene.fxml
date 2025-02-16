@@ -78,7 +78,7 @@
                <children>
                   <VBox alignment="CENTER" spacing="10.0">
                      <children>
-                        <TextField fx:id="txtServerIP" alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Server IP" />
+                        <TextField fx:id="txtServerIP" alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Server IP" text="127.0.0.1" />
                         <TextField fx:id="txtSessionID" alignment="CENTER" prefHeight="27.0" prefWidth="191.0" promptText="Enter Session ID" />
                      </children>
                   </VBox>

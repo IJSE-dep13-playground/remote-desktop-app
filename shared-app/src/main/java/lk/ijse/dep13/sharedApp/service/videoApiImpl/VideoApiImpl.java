@@ -1,99 +1,99 @@
 package lk.ijse.dep13.sharedApp.service.videoApiImpl;
 
 import com.github.sarxos.webcam.Webcam;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import lk.ijse.dep13.sharedApp.service.VideoAPI;
-import lk.ijse.dep13.sharedApp.service.AudioAPI;
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.*;
+import javafx.scene.image.Image;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class VideoApiImpl implements VideoAPI {
     private Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
+    private Webcam webcam;
+    private boolean running = true;
 
-    public VideoApiImpl(Socket socket) {
-        this.socket = socket;
-        try {
-            this.oos = new ObjectOutputStream(socket.getOutputStream());
-            this.ois = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public VideoApiImpl(Socket videoSocket) throws IOException {
+        this.socket = videoSocket;
+        this.oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+        this.ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream())) ;
+        this.webcam = Webcam.getDefault();
+        if (webcam != null) {
+            webcam.open();
+        } else {
+            throw new IOException("Webcam could not be opened");
         }
     }
 
-    @Override
     public void sendVideo() {
-        Webcam webcam = null;
-            try {
-                webcam = Webcam.getDefault();
-                webcam.open();
-                OutputStream os = socket.getOutputStream();
-                BufferedOutputStream bos = new BufferedOutputStream(os);
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
-
-                while (!socket.isClosed()) {
+        new Thread(() -> {
+            System.out.println("Sending video");
+        while(running) {
+                try {
                     BufferedImage bufferedImage = webcam.getImage();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage,"jpeg",baos);
-
-                    oos.writeObject(baos.toByteArray());
-                    oos.flush();
+                    if (bufferedImage != null) {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ImageIO.write(bufferedImage, "jpg", baos);
+                        byte[] imageBytes = baos.toByteArray();
+                        oos.writeInt(imageBytes.length);
+                        oos.write(imageBytes);
+                        oos.flush();
+                    }
                     Thread.sleep(1000/30);
-                }
-            } catch (Exception e) {
-                System.out.println("Error during video streaming: " + e.getMessage());
-            } finally {
-                if (webcam != null && webcam.isOpen()) {
-                    webcam.close();
-                }
-            }
-        }
-
-    @Override
-    public void receiveVideo(ImageView videoPreview) {
-        Task<Image> task = new Task<>() {
-            @Override
-            protected Image call() throws Exception {
-                try (InputStream is = socket.getInputStream();
-                     BufferedInputStream bis = new BufferedInputStream(is);
-                     ObjectInputStream ois = new ObjectInputStream(bis)) {
-
-                    while (!socket.isClosed() && !isCancelled()) {
-                        try {
-                            byte[] bytes = (byte[]) ois.readObject();
-                            updateValue(new Image(new ByteArrayInputStream(bytes)));
-                        } catch (EOFException | SocketException e) {
-                            System.out.println("Server has closed the connection");
-                            break;
-                        } catch (IOException | ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                    } catch (IOException | InterruptedException e) {
+                        System.err.println("Video sending error: " + e.getMessage());
+                        running = false;
                     }
                 }
-                return null;
-            }
-        };
-        Platform.runLater(() -> videoPreview.imageProperty().bind(task.valueProperty()));
-        new Thread(task).start();
+        }).start();
     }
 
-    @Override
+    public void receiveVideo(ImageView videoPreview) {
+       Task<Image> task = new Task<>() {
+           @Override
+           protected Image call() throws Exception {
+               while(true) {
+                   try{
+                       int length = ois.readInt();
+                       byte[] bytes = new byte[length];
+                       ois.readFully(bytes);
+                       Image image = new Image(new ByteArrayInputStream(bytes));
+                       updateValue(image);
+                   } catch (IOException e) {
+                       System.err.println("Video receiving error: " + e.getMessage());
+                       running = false;
+                       break;
+                   }
+               }
+               return null;
+           }
+       };
+       videoPreview.imageProperty().bind(task.valueProperty());
+       new Thread(task).start();
+    }
+
     public void close() {
+        running = false;
         try {
-            if (oos != null) oos.close();
-            if (ois != null) ois.close();
-            if (socket != null && !socket.isClosed()) socket.close();
+            if (webcam != null) {
+                webcam.close();
+            }
+            if (oos != null) {
+                oos.close();
+            }
+            if (ois != null) {
+                ois.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
         } catch (IOException e) {
-            System.out.println("Error closing video resources: " + e.getMessage());
+            System.err.println("Error closing resources: " + e.getMessage());
         }
     }
 }

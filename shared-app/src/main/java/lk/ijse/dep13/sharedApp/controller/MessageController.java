@@ -2,7 +2,6 @@ package lk.ijse.dep13.sharedApp.controller;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -14,7 +13,7 @@ import lk.ijse.dep13.sharedApp.service.chatAPIImpl.ChatAPIService;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.Socket;
+
 
 public class MessageController {
     public TextArea txtAreaChat;
@@ -24,7 +23,6 @@ public class MessageController {
     public AnchorPane root;
 
 
-    String test = null;
     private ChatAPI chatAPI;
     private volatile boolean running = true;
 
@@ -33,10 +31,13 @@ public class MessageController {
         new Thread(() -> {
            l1 :while (running) {
                 try {
+                    if (!running) break;
                     String message = chatAPI.receiveMessage();
-                    if(message.equals("closingTheChat-876213")) break l1;
+                    if (message == null || !running) break;
+//                    if(message.equals("closingTheChat-876213")) break l1;
                     Platform.runLater(() -> txtAreaChat.appendText("Client: " + message + "\n"));
                 } catch (IOException e) {
+                    if (!running) break;
                     Platform.runLater(() -> txtAreaChat.appendText("Connection closed.\n"));
                     throw new RuntimeException(e);
                 }
@@ -48,12 +49,14 @@ public class MessageController {
 
     public void handleCloseRequest(WindowEvent event)  {
         running = false;
-        System.out.println("Window has been closed");
-        try {
-        chatAPI.sendMessage("closingTheChat-876213");
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+//        System.out.println("Window has been closed");
+//        try {
+//        chatAPI.sendMessage("closingTheChat-876213");
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+        Stage stage = (Stage) ((WindowEvent) event).getSource();
+        stage.close();
     }
 
 
