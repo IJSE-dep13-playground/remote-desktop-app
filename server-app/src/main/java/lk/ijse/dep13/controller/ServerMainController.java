@@ -67,7 +67,7 @@ public class ServerMainController {
     private String clientAddress;
     private BufferedReader br;
     private BufferedWriter bw;
-
+    private Socket videoSocket;
 
     public void initialize() {
         updateServerStatus("Create a Session to connect...","#0066ff");
@@ -88,7 +88,6 @@ public class ServerMainController {
             videoServerSocket = new ServerSocket(9081);
             audioServerSocket = new ServerSocket(9082);
             messageServerSocket = new ServerSocket(9083);
-            System.out.println(7);
           new Thread(()->{
               try {
                   messageSocket=messageServerSocket.accept();
@@ -98,7 +97,15 @@ public class ServerMainController {
                   throw new RuntimeException(e);
               }
           }).start();
-            System.out.println(8);
+
+          new Thread(()->{
+              try {
+                  videoSocket = videoServerSocket.accept();
+              } catch (IOException e) {
+                  throw new RuntimeException(e);
+              }
+          }).start();
+
             screenServerSocket = new ServerSocket(9084);
             fileTransferServerSocket=new ServerSocket(9085);
             sessionActive = true;
@@ -312,14 +319,13 @@ public class ServerMainController {
         stage.setScene(scene);
         stage.show();
 
+        VideoCallController videoCallController = loader.getController();
         if (sessionActive){
             try{
-                Socket videoSocket = videoServerSocket.accept();
-                Socket audioSocket = audioServerSocket.accept();
-                VideoCallController controller = loader.getController();
-                controller.initialize(videoSocket,audioSocket);
+                System.out.println("waiting for the client");
+                videoCallController.initialize(videoSocket);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Error starting video call: " + e.getMessage());
             }
         }
     }
@@ -332,8 +338,8 @@ public class ServerMainController {
         stage.setScene(scene);
         stage.show();
         MessageController controller = loader.getController();
-        stage.setOnCloseRequest((WindowEvent w)->{
-            controller.handleCloseRequest(w);
+        stage.setOnCloseRequest((event)->{
+            controller.handleCloseRequest(event);
         });
 
         if (sessionActive){
@@ -342,7 +348,6 @@ public class ServerMainController {
                 System.out.println("Client connected!");
 
                 // Retrieve the controller from the same loader instance
-
                 controller.initialize(bw,br);
 
             } catch (Exception e) {

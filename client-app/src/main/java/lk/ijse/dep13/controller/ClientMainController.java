@@ -279,16 +279,16 @@ public class ClientMainController {
         stage.setScene(scene);
         stage.show();
 
-        if (sessionActive) {
-            if (videoSocket != null && !videoSocket.isClosed()) {
-                try {
-                    VideoCallController controller = loader.getController();
-                    controller.initialize(videoSocket,audioSocket);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+        VideoCallController videoCallController = loader.getController();
+        if(sessionActive){
+            try{
+                System.out.println("server activate");
+                videoCallController.initialize(videoSocket);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
+
     }
 
     public void hBoxChatOnMouseClicked(MouseEvent mouseEvent) throws IOException {
@@ -300,44 +300,16 @@ public class ClientMainController {
      
         stage.show();
         MessageController controller = loader.getController();
-        stage.setOnCloseRequest((WindowEvent w)->{
-           controller.handleCloseRequest(w);
+        stage.setOnCloseRequest(event -> {
+            controller.handleCloseRequest(event);
         });
 
         if (sessionActive){
             try {
-
                 controller.initialize(bw,br);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private void startAudioStreaming(Socket audioSocket) {
-        try {
-            AudioRecorder audioRecorder = new AudioRecorder();
-
-            // Start sending audio
-            new Thread(() -> {
-                try {
-                    audioRecorder.startRecording(audioSocket.getOutputStream());
-                } catch (IOException e) {
-                    System.err.println("Error in audio sending: " + e.getMessage());
-                }
-            }).start();
-
-            // Start receiving and playing audio
-            new Thread(() -> {
-                try {
-                    audioRecorder.startPlaying(audioSocket.getInputStream());
-                } catch (IOException e) {
-                    System.err.println("Error in audio receiving: " + e.getMessage());
-                }
-            }).start();
-
-        } catch (Exception e) {
-            System.err.println("Error in initializing audio recorder: " + e.getMessage());
         }
     }
 
