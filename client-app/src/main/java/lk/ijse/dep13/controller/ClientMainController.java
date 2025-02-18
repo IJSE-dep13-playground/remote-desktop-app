@@ -153,7 +153,7 @@ public class ClientMainController {
                 br=new BufferedReader(new InputStreamReader(messageSocket.getInputStream()));
                 fileTransferSocket =new Socket(serverIP,9085);
                 ois_ft=new ObjectInputStream(fileTransferSocket.getInputStream());
-                 oos_ft=new ObjectOutputStream(fileTransferSocket.getOutputStream());
+                oos_ft=new ObjectOutputStream(fileTransferSocket.getOutputStream());
 
                 oos = new ObjectOutputStream(screenShareSocket.getOutputStream());
                 ois = new ObjectInputStream(new BufferedInputStream(screenShareSocket.getInputStream()));

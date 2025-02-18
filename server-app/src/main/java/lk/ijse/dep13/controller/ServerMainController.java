@@ -53,6 +53,7 @@ public class ServerMainController {
     public Button btnEndSession;
     public HBox hBoxConnection;
     private Socket messageSocket;
+    private Socket fileTransferSocket;
 
     private ServerSocket serverSocket = null;
     private ServerSocket screenServerSocket = null;
@@ -110,6 +111,16 @@ public class ServerMainController {
 
             screenServerSocket = new ServerSocket(9084);
             fileTransferServerSocket=new ServerSocket(9085);
+            new Thread(()->{
+                try {
+                    fileTransferSocket=fileTransferServerSocket.accept();
+                    oos_ft=new ObjectOutputStream(fileTransferSocket.getOutputStream());
+                    ois_ft=new ObjectInputStream(fileTransferSocket.getInputStream());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+
             sessionActive = true;
 
             // get time before socket start
@@ -300,10 +311,6 @@ public class ServerMainController {
 
         if (sessionActive){
             try {
-                System.out.println("waiting for the client");
-                Socket fileTransferSocket =fileTransferServerSocket.accept();
-                System.out.println("Client connected!");
-
                 // Retrieve the controller from the same loader instance
                 FileSenderController controller = loader.getController();
                 controller.initialize(fileTransferSocket,oos_ft,ois_ft);
@@ -324,7 +331,6 @@ public class ServerMainController {
         VideoCallController videoCallController = loader.getController();
         if (sessionActive){
             try{
-                System.out.println("waiting for the client");
                 videoCallController.initialize(videoSocket);
             } catch (Exception e) {
                 System.err.println("Error starting video call: " + e.getMessage());
